@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: vdt
+
+  profiles:
+    active: dev  # change to 'prod' when deploying
