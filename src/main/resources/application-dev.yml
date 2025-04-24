@@ -1,0 +1,30 @@
+spring:
+  datasource:
+    url: jdbc:mariadb://localhost:3306/vdt_db
+    username: root
+    password: ""
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+  mail:
+    host: ${EMAIL_HOST:mail.designxcel.com} # Environment variable for email host, default to smtp.gmail.com
+    port: 465 # Changed to 587 for TLS (or use 465 for SSL)
+    username: ${EMAIL_USERNAME} # Environment variable for email username
+    password: ${EMAIL_PASSWORD} # Environment variable for email password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: false # Ensure this is true for TLS
+          ssl:
+            enable: true # Set to true if using SSL (port 465)
+    default-encoding: UTF-8
+    from: ${EMAIL_USERNAME}
