@@ -3,4 +3,4 @@ spring:
     name: vdt
 
   profiles:
-    active: dev  # change to 'prod' when deploying
+    active: prod  # change to 'prod' when deploying, 'dev' for development
