@@ -1,0 +1,35 @@
+package com.vdt.vdt.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+public class Customer {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String customerName;
+    private CustomerTier contactTier;
+    private String email;
+
+    @OneToOne
+    private Department department;
+
+    private AccountType accountType;
+
+    private String phoneNumber;
+
+    private String companyName;
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Ticket> tickets = new ArrayList<>();
+
+
+
+}
+

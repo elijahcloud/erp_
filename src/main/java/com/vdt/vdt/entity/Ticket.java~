@@ -1,0 +1,49 @@
+package com.vdt.vdt.entity;
+
+import jakarta.persistence.*;
+import lombok.Data;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Data
+public class Ticket {
+    @Id
+    @GeneratedValue
+    private Long id;
+
+    private String ticketTitle;
+
+    @Enumerated(EnumType.STRING)
+    private TicketType type;
+
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private TicketPriority priority;
+
+    @Enumerated(EnumType.STRING)
+    private TicketStatus status;
+
+    private String source;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "customer_id", nullable = false)
+    private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "resolving_department_id")
+    private Department assignedDepartment;
+
+    private String assignedAgent;
+
+    @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TicketComment> comments = new ArrayList<>();
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private boolean deleted = false;
+}
+
