@@ -1,0 +1,35 @@
+--
+-- CREATE TYPE ticket_type AS ENUM ('COMPLAINT', 'SERVICE_REQUEST', 'INFO_REQUEST', 'TECHNICAL_SUPPORT');
+--
+-- CREATE TYPE ticket_status AS ENUM ('OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED', 'RESOLVED', 'CLOSED');
+--
+-- CREATE TYPE ticket_priority AS ENUM ('LOW', 'MEDIUM', 'HIGH', 'CRITICAL');
+--
+-- CREATE TYPE department AS ENUM ('SALES', 'SUPPORT', 'TECHNICAL');
+--
+-- CREATE TABLE tickets (
+--                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                          ticket_title VARCHAR(255) NOT NULL,
+--                          type ticket_type NOT NULL,
+--                          description TEXT,
+--                          priority ticket_priority NOT NULL,
+--                          status ticket_status NOT NULL,
+--                          source VARCHAR(255),
+--                          customer_id BIGINT,
+--                          assigned_department department,
+--                          assigned_agent VARCHAR(255),
+--                          created_at DATETIME NOT NULL,
+--                          updated_at DATETIME NOT NULL,
+--                          deleted BOOLEAN DEFAULT FALSE,
+--                          FOREIGN KEY (customer_id) REFERENCES customers(id)
+--
+-- CREATE TABLE ticket_comments (
+--                                  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+--                                  comment TEXT NOT NULL,
+--                                  author VARCHAR(255) NOT NULL,
+--                                  timestamp DATETIME NOT NULL,
+--                                  ticket_id BIGINT,
+--                                  FOREIGN KEY (ticket_id) REFERENCES tickets(id) ON DELETE CASCADE
+-- );
+--
+
