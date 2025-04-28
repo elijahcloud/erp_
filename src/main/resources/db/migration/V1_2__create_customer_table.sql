@@ -7,6 +7,7 @@ CREATE TABLE customers (
     customer_email VARCHAR(65) UNIQUE NOT NULL,
     customer_account_type VARCHAR(100) NOT NULL,
     customer_tier VARCHAR(100),
+    company_name VARCHAR(255) NULL,
     customer_account_number VARCHAR(20) NOT NULL,
     customer_user_id_agent BIGINT, -- (Optional) Staff assigned to manage customer
     customer_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,

@@ -2,6 +2,7 @@ package com.vdt.vdt.service;
 
 import com.vdt.vdt.dto.CreateTicketRequest;
 import com.vdt.vdt.dto.TicketDetailDto;
+import com.vdt.vdt.dto.TicketMapper;
 import com.vdt.vdt.entity.*;
 import com.vdt.vdt.repository.TicketRepository;
 import com.vdt.vdt.specification.TicketSpecification;

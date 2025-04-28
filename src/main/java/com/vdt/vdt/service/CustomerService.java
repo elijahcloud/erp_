@@ -113,4 +113,9 @@ public class CustomerService {
         System.out.println("Customer updated successfully: " + updatedCustomer);
         return updatedCustomer;
     }
+
+    public Customer findById(Long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+    }
 }

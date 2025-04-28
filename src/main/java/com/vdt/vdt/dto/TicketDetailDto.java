@@ -33,12 +33,12 @@ public class TicketDetailDto {
         this.status = String.valueOf(ticket.getStatus());
         this.priority = String.valueOf(ticket.getPriority());
         this.assignedAgent = ticket.getAssignedAgent();
-        this.customerName = ticket.getCustomer() != null ? ticket.getCustomer().getCustomerName() : null;
+        // this.customerName = ticket.getCustomer() != null ? ticket.getCustomer().getCustomerName() : null;
         this.createdAt = ticket.getCreatedAt();
 
-        this.customerDepartment = ticket.getCustomer() != null && ticket.getCustomer().getDepartment() != null
-                ? ticket.getCustomer().getDepartment().getName()
-                : "N/A";
+        // this.customerDepartment = ticket.getCustomer() != null && ticket.getCustomer().getDepartment() != null
+        //         ? ticket.getCustomer().getDepartment().getName()
+        //         : "N/A";
 
         this.assignedTo = ticket.getAssignedAgent();
 

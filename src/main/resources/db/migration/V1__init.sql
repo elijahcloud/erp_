@@ -5,129 +5,130 @@
 
 -- Create base tables first
 CREATE TABLE users (
-                       user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                       user_email VARCHAR(255) UNIQUE NOT NULL,
-                       user_password TEXT NOT NULL,
-                       user_is_active TINYINT(1) DEFAULT 1,
-                       user_active_user_role_id BIGINT DEFAULT NULL,
-                       user_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                       user_created_by BIGINT DEFAULT NULL,
-                       user_updated_at DATETIME DEFAULT NULL,
-                       user_updated_by BIGINT DEFAULT NULL,
-                       user_deleted_at DATETIME DEFAULT NULL,
-                       user_deleted_by BIGINT DEFAULT NULL
+  user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_email VARCHAR(255) UNIQUE NOT NULL,
+  user_password TEXT NOT NULL,
+  user_is_active TINYINT(1) DEFAULT 1,
+  user_active_user_role_id BIGINT DEFAULT NULL,
+  user_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_created_by BIGINT DEFAULT NULL,
+  user_updated_at DATETIME DEFAULT NULL,
+  user_updated_by BIGINT DEFAULT NULL,
+  user_deleted_at DATETIME DEFAULT NULL,
+  user_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE tenants (
-                         tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                         tenant_name VARCHAR(255) NOT NULL,
-                         tenant_code VARCHAR(100) UNIQUE NOT NULL,
-                         tenant_is_landlord TINYINT(1) DEFAULT 0,
-                         tenant_is_active TINYINT(1) DEFAULT 1,
-                         tenant_logo VARCHAR(255) DEFAULT NULL,
-                         tenant_contact_email VARCHAR(70) DEFAULT NULL,
-                         tenant_contact_phone VARCHAR(20) DEFAULT NULL,
-                         tenant_address VARCHAR(255) DEFAULT NULL,
-                         tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                         tenant_created_by BIGINT DEFAULT NULL,
-                         tenant_updated_at DATETIME DEFAULT NULL,
-                         tenant_updated_by BIGINT DEFAULT NULL,
-                         tenant_deleted_at DATETIME DEFAULT NULL,
-                         tenant_deleted_by BIGINT DEFAULT NULL
+  tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  tenant_name VARCHAR(255) NOT NULL,
+  tenant_code VARCHAR(100) UNIQUE NOT NULL,
+  tenant_is_landlord TINYINT(1) DEFAULT 0,
+  tenant_is_active TINYINT(1) DEFAULT 1,
+  tenant_logo VARCHAR(255) DEFAULT NULL,
+  tenant_contact_email VARCHAR(70) DEFAULT NULL,
+  tenant_contact_phone VARCHAR(20) DEFAULT NULL,
+  tenant_address VARCHAR(255) DEFAULT NULL,
+  tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  tenant_created_by BIGINT DEFAULT NULL,
+  tenant_updated_at DATETIME DEFAULT NULL,
+  tenant_updated_by BIGINT DEFAULT NULL,
+  tenant_deleted_at DATETIME DEFAULT NULL,
+  tenant_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 -- Create dependent tables
 CREATE TABLE roles (
-                       role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                       role_name VARCHAR(100) UNIQUE NOT NULL,
-                       role_description TEXT DEFAULT NULL,
-                       role_scope VARCHAR(20) CHECK (role_scope IN ('LANDLORD', 'TENANT', 'GLOBAL')),
-                       role_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                       role_updated_at DATETIME DEFAULT NULL,
-                       role_created_by BIGINT DEFAULT NULL,
-                       role_updated_by BIGINT DEFAULT NULL,
-                       role_deleted_at DATETIME DEFAULT NULL,
-                       role_deleted_by BIGINT DEFAULT NULL
+  role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  role_name VARCHAR(100) UNIQUE NOT NULL,
+  role_description TEXT DEFAULT NULL,
+  role_scope VARCHAR(20) CHECK (role_scope IN ('LANDLORD', 'TENANT', 'GLOBAL')),
+  role_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  role_updated_at DATETIME DEFAULT NULL,
+  role_created_by BIGINT DEFAULT NULL,
+  role_updated_by BIGINT DEFAULT NULL,
+  role_deleted_at DATETIME DEFAULT NULL,
+  role_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
+
 CREATE TABLE user_roles (
-                            user_role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                            user_role_user_id BIGINT NOT NULL,
-                            user_role_tenant_id BIGINT NOT NULL,
-                            user_role_role_id BIGINT NOT NULL,
-                            user_role_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                            user_role_created_by BIGINT DEFAULT NULL,
-                            user_role_updated_at DATETIME DEFAULT NULL,
-                            user_role_updated_by BIGINT DEFAULT NULL,
-                            user_role_deleted_at DATETIME DEFAULT NULL,
-                            user_role_deleted_by BIGINT DEFAULT NULL,
-                            CONSTRAINT fk_user_roles_user FOREIGN KEY (user_role_user_id) REFERENCES users(user_id),
-                            CONSTRAINT fk_user_roles_tenant FOREIGN KEY (user_role_tenant_id) REFERENCES tenants(tenant_id),
-                            CONSTRAINT fk_user_roles_role FOREIGN KEY (user_role_role_id) REFERENCES roles(role_id),
-                            CONSTRAINT uc_user_role_tenant UNIQUE (user_role_user_id, user_role_tenant_id, user_role_role_id)
+  user_role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_role_user_id BIGINT NOT NULL,
+  user_role_tenant_id BIGINT NOT NULL,
+  user_role_role_id BIGINT NOT NULL,
+  user_role_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_role_created_by BIGINT DEFAULT NULL,
+  user_role_updated_at DATETIME DEFAULT NULL,
+  user_role_updated_by BIGINT DEFAULT NULL,
+  user_role_deleted_at DATETIME DEFAULT NULL,
+  user_role_deleted_by BIGINT DEFAULT NULL,
+  CONSTRAINT fk_user_roles_user FOREIGN KEY (user_role_user_id) REFERENCES users(user_id),
+  CONSTRAINT fk_user_roles_tenant FOREIGN KEY (user_role_tenant_id) REFERENCES tenants(tenant_id),
+  CONSTRAINT fk_user_roles_role FOREIGN KEY (user_role_role_id) REFERENCES roles(role_id),
+  CONSTRAINT uc_user_role_tenant UNIQUE (user_role_user_id, user_role_tenant_id, user_role_role_id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE tenant_domains (
-                                tenant_domain_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                tenant_domain_tenant_id BIGINT NOT NULL,
-                                tenant_domain_name VARCHAR(255) NOT NULL UNIQUE,
-                                tenant_domain_is_primary TINYINT(1) DEFAULT 1,
-                                tenant_domain_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                                tenant_domain_created_by BIGINT DEFAULT NULL,
-                                tenant_domain_updated_at DATETIME DEFAULT NULL,
-                                tenant_domain_updated_by BIGINT DEFAULT NULL,
-                                tenant_domain_deleted_at DATETIME DEFAULT NULL,
-                                tenant_domain_deleted_by BIGINT DEFAULT NULL
+  tenant_domain_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  tenant_domain_tenant_id BIGINT NOT NULL,
+  tenant_domain_name VARCHAR(255) NOT NULL UNIQUE,
+  tenant_domain_is_primary TINYINT(1) DEFAULT 1,
+  tenant_domain_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  tenant_domain_created_by BIGINT DEFAULT NULL,
+  tenant_domain_updated_at DATETIME DEFAULT NULL,
+  tenant_domain_updated_by BIGINT DEFAULT NULL,
+  tenant_domain_deleted_at DATETIME DEFAULT NULL,
+  tenant_domain_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE user_tenants (
-                              user_tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                              user_tenant_user_id BIGINT NOT NULL,
-                              user_tenant_tenant_id BIGINT NOT NULL,
-                              user_tenant_is_primary TINYINT(1) DEFAULT 0,
-                              user_tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                              user_tenant_created_by BIGINT DEFAULT NULL,
-                              user_tenant_updated_at DATETIME DEFAULT NULL,
-                              user_tenant_updated_by BIGINT DEFAULT NULL,
-                              user_tenant_deleted_at DATETIME DEFAULT NULL,
-                              user_tenant_deleted_by BIGINT DEFAULT NULL,
-                              CONSTRAINT fk_user_tenants_user FOREIGN KEY (user_tenant_user_id) REFERENCES users(user_id),
-                              CONSTRAINT fk_user_tenants_tenant FOREIGN KEY (user_tenant_tenant_id) REFERENCES tenants(tenant_id),
-                              CONSTRAINT uc_user_tenant UNIQUE (user_tenant_user_id, user_tenant_tenant_id)
+  user_tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  user_tenant_user_id BIGINT NOT NULL,
+  user_tenant_tenant_id BIGINT NOT NULL,
+  user_tenant_is_primary TINYINT(1) DEFAULT 0,
+  user_tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  user_tenant_created_by BIGINT DEFAULT NULL,
+  user_tenant_updated_at DATETIME DEFAULT NULL,
+  user_tenant_updated_by BIGINT DEFAULT NULL,
+  user_tenant_deleted_at DATETIME DEFAULT NULL,
+  user_tenant_deleted_by BIGINT DEFAULT NULL,
+  CONSTRAINT fk_user_tenants_user FOREIGN KEY (user_tenant_user_id) REFERENCES users(user_id),
+  CONSTRAINT fk_user_tenants_tenant FOREIGN KEY (user_tenant_tenant_id) REFERENCES tenants(tenant_id),
+  CONSTRAINT uc_user_tenant UNIQUE (user_tenant_user_id, user_tenant_tenant_id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE permissions (
-                             permission_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                             permission_code VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'view_financial_reports'
-                             permission_name VARCHAR(255) NOT NULL,        -- Human-friendly name
-                             permission_module VARCHAR(100) NOT NULL,      -- e.g., 'finance', 'hr'
-                             permission_description TEXT DEFAULT NULL,
-                             permission_created_at DATETIME DEFAULT NULL,
-                             permission_created_by BIGINT DEFAULT NULL,
-                             permission_updated_at DATETIME DEFAULT NULL,
-                             permission_updated_by BIGINT DEFAULT NULL,
-                             permission_deleted_at DATETIME DEFAULT NULL,
-                             permission_deleted_by BIGINT DEFAULT NULL
+  permission_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  permission_code VARCHAR(100) UNIQUE NOT NULL, -- e.g., 'view_financial_reports'
+  permission_name VARCHAR(255) NOT NULL,        -- Human-friendly name
+  permission_module VARCHAR(100) NOT NULL,      -- e.g., 'finance', 'hr'
+  permission_description TEXT DEFAULT NULL,
+  permission_created_at DATETIME DEFAULT NULL,
+  permission_created_by BIGINT DEFAULT NULL,
+  permission_updated_at DATETIME DEFAULT NULL,
+  permission_updated_by BIGINT DEFAULT NULL,
+  permission_deleted_at DATETIME DEFAULT NULL,
+  permission_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE role_permissions (
-                                  role_permission_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                  role_permission_role_id BIGINT NOT NULL,
-                                  role_permission_permission_id BIGINT NOT NULL,
-                                  CONSTRAINT fk_role_permissions_role FOREIGN KEY (role_permission_role_id) REFERENCES roles(role_id),
-                                  CONSTRAINT fk_role_permissions_permission FOREIGN KEY (role_permission_permission_id) REFERENCES permissions(permission_id),
-                                  CONSTRAINT uc_role_permission UNIQUE (role_permission_role_id, role_permission_permission_id)
+  role_permission_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  role_permission_role_id BIGINT NOT NULL,
+  role_permission_permission_id BIGINT NOT NULL,
+  CONSTRAINT fk_role_permissions_role FOREIGN KEY (role_permission_role_id) REFERENCES roles(role_id),
+  CONSTRAINT fk_role_permissions_permission FOREIGN KEY (role_permission_permission_id) REFERENCES permissions(permission_id),
+  CONSTRAINT uc_role_permission UNIQUE (role_permission_role_id, role_permission_permission_id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE audit_logs (
-                            audit_log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                            audit_log_table_name VARCHAR(255) DEFAULT NULL,
-                            audit_log_action VARCHAR(10) CHECK (audit_log_action IN ('INSERT', 'UPDATE', 'DELETE')),
-                            audit_log_record_id BIGINT DEFAULT NULL,
-                            audit_log_data_before JSON DEFAULT NULL,
-                            audit_log_data_after JSON DEFAULT NULL,
-                            audit_log_performed_by BIGINT DEFAULT NULL,
-                            audit_log_performed_at DATETIME DEFAULT CURRENT_TIMESTAMP
+  audit_log_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  audit_log_table_name VARCHAR(255) DEFAULT NULL,
+  audit_log_action VARCHAR(10) CHECK (audit_log_action IN ('INSERT', 'UPDATE', 'DELETE')),
+  audit_log_record_id BIGINT DEFAULT NULL,
+  audit_log_data_before JSON DEFAULT NULL,
+  audit_log_data_after JSON DEFAULT NULL,
+  audit_log_performed_by BIGINT DEFAULT NULL,
+  audit_log_performed_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- Add explicit indexes for referenced columns
