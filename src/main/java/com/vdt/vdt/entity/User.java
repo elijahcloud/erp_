@@ -82,8 +82,8 @@ public class User {
     @Column(name = "user_deleted_at", columnDefinition = "DATETIME")
     private LocalDateTime deletedAt;
 
-    @OneToMany(mappedBy = "agent")
-    List<Customer> customer;
+    @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Customer> customer;
 
     public User(String id) {
         this.id = Long.parseLong(id);

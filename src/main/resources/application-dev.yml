@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:mariadb://localhost:3306/vdt_db
     username: root
-    password: elijah
+    password: ""
 
   jpa:
     hibernate:
@@ -14,7 +14,7 @@ spring:
     locations: classpath:db/migration
 
   mail:
-    host: ${EMAIL_HOST:mail.designxcel.com} # Environment variable for email host, default to smtp.gmail.com
+    host: ${EMAIL_HOST:mail.designxcel.com} # Environment variable for email host, default to mail.designxcel.com
     port: 465 # Changed to 587 for TLS (or use 465 for SSL)
     username: ${EMAIL_USERNAME} # Environment variable for email username
     password: ${EMAIL_PASSWORD} # Environment variable for email password

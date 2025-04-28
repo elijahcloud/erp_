@@ -11,4 +11,14 @@ public class CustomerNoteDTO {
     private LocalDateTime dateCreated;
     private String userName;
     private boolean pinned;
+    private LocalDateTime createdAt; // Add this field
+
+    // Getter and setter for createdAt
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 }
