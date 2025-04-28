@@ -1,8 +1,5 @@
-package com.vdt.vdt.service;
+package com.vdt.vdt.dto;
 
-import com.vdt.vdt.dto.CommentDto;
-import com.vdt.vdt.dto.CreateTicketRequest;
-import com.vdt.vdt.dto.TicketDetailDto;
 import com.vdt.vdt.entity.*;
 import org.springframework.stereotype.Component;
 
@@ -38,15 +35,15 @@ public class TicketMapper {
         dto.setType(ticket.getType().name());
         dto.setSource(ticket.getSource());
         dto.setAssignedAgent(ticket.getAssignedAgent());
-        dto.setCustomerName(ticket.getCustomer() != null ? ticket.getCustomer().getCustomerName() : null);
+        // dto.setCustomerName(ticket.getCustomer() != null ? ticket.getCustomer().getCustomerName() : null);
         dto.setCreatedAt(ticket.getCreatedAt());
         dto.setUpdatedAt(ticket.getUpdatedAt());
 
-        dto.setCustomerDepartment(
-                ticket.getCustomer() != null && ticket.getCustomer().getDepartment() != null
-                        ? ticket.getCustomer().getDepartment().getName()
-                        : "N/A"
-        );
+        // dto.setCustomerDepartment(
+        //         ticket.getCustomer() != null && ticket.getCustomer().getDepartment() != null
+        //                 ? ticket.getCustomer().getDepartment().getName()
+        //                 : "N/A"
+        // );
 
         dto.setAssignedTo(ticket.getAssignedAgent());
 
@@ -63,7 +60,7 @@ public class TicketMapper {
                         CommentDto cd = new CommentDto();
                         cd.setId(comment.getId());
                         cd.setComment(comment.getComment());
-                        cd.setAuthor(comment.getAuthor());
+                        // cd.setAuthor(comment.getAuthor());
                         cd.setTimestamp(comment.getTimestamp());
                         return cd;
                     })
