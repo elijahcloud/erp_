@@ -1,4 +1,3 @@
-
 package com.vdt.vdt.service;
 
 import com.vdt.vdt.entity.Customer;
@@ -55,9 +54,9 @@ public class CustomerNoteService {
         CustomerNote note = new CustomerNote();
         note.setNoteContent(dto.getNoteContent());
         note.setCustomer(customer);
-        note.setUser(user);
+        note.setCreatedBy(user);
         note.setPinned(dto.isPinned());
-        note.setDateCreated(LocalDateTime.now());
+        note.setCreatedAt(LocalDateTime.now());
 
         return toDTO(noteRepository.save(note));
     }
@@ -91,9 +90,9 @@ public class CustomerNoteService {
         CustomerNoteDTO dto = new CustomerNoteDTO();
         dto.setId(note.getId());
         dto.setNoteContent(note.getNoteContent());
-        dto.setDateCreated(note.getDateCreated());
+        dto.setCreatedAt(note.getCreatedAt());
         dto.setPinned(note.isPinned());
-        dto.setUserName(note.getUser().getEmail());
+        dto.setUserName(note.getCreatedBy().getEmail());
         return dto;
     }
 }
