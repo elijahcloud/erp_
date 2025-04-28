@@ -37,3 +37,6 @@ build/
 *.jar
 *.war
 *.log
+
+.src/main/resources/db.migration
+pom.xml
