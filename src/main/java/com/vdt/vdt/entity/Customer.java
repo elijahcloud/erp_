@@ -1,13 +1,19 @@
 package com.vdt.vdt.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "customers")
 @Data
+@EqualsAndHashCode(exclude = {"customerKYC"})
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,6 +44,7 @@ public class Customer {
     @JoinColumn(name = "customer_user_id_agent", referencedColumnName = "user_id")
     private User agent;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CustomerNote> notes;
 
@@ -73,4 +80,17 @@ public class Customer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_deleted_by", insertable = false, updatable = false)
     private User deletedByUser;
+
+
+
+    @OneToOne(mappedBy = "customer")
+    private KYC customerKYC;
+
+    @OneToMany(mappedBy = "customer")
+    private Set<SubscriptionService> subscriptionServices;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "customer_tenant_id", referencedColumnName = "tenant_id")
+    private Tenant tenant;
 }
