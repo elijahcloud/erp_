@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
 public class TenantDomain {
 
     @Id
@@ -17,6 +18,7 @@ public class TenantDomain {
     @Column(name = "tenant_domain_id")
     private Long id;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_domain_tenant_id", nullable = false) // Ensure the column name matches the Tenant entity's primary key
     private Tenant tenant;
