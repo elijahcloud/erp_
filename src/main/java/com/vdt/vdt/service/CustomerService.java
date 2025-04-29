@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.vdt.vdt.entity.AccountType; // Ensure this import matches the actual package of AccountType
+import com.vdt.vdt.entity.CustomerAccountType; // Ensure this import matches the actual package of AccountType
 import com.vdt.vdt.entity.CustomerTier; // Ensure this import matches the actual package of CustomerTier
 
 import java.util.Optional;
@@ -40,7 +40,7 @@ public class CustomerService {
             customer.setEmail(customerDTO.getEmail());
             customer.setPhoneNumber(customerDTO.getPhoneNumber());
             customer.setCustomerTier(CustomerTier.valueOf(customerDTO.getCustomerTier()));
-            customer.setAccountType(AccountType.valueOf(customerDTO.getAccountType()));
+            customer.setAccountType(CustomerAccountType.valueOf(customerDTO.getAccountType()));
             customer.setAccountNumber(customerDTO.getAccountNumber());
         } else {
             String errorMessage = "User Agent with ID " + customerDTO.getUserAgentId() + " not found.";
@@ -103,7 +103,7 @@ public class CustomerService {
             existingCustomer.setEmail(customerDTO.getEmail());
         }
         if (customerDTO.getAccountType() != null) {
-            existingCustomer.setAccountType(AccountType.valueOf(customerDTO.getAccountType()));
+            existingCustomer.setAccountType(CustomerAccountType.valueOf(customerDTO.getAccountType()));
         }
         if (customerDTO.getCustomerTier() != null) {
             existingCustomer.setCustomerTier(CustomerTier.valueOf(customerDTO.getCustomerTier()));

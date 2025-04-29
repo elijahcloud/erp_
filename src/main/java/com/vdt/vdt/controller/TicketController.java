@@ -16,10 +16,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tickets")
-@RequiredArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
+
+    private TicketController(TicketService ticketService) {
+        this.ticketService = ticketService;
+    }
 
     @PostMapping
     public ResponseEntity<String> createTicket(@RequestBody CreateTicketRequest request) {
@@ -68,5 +71,62 @@ public class TicketController {
     public ResponseEntity<Map<String, Object>> getDashboardStats() {
         Map<String, Object> stats = ticketService.getDashboardStats();
         return ResponseEntity.ok(stats);
+    }
+
+    @PostMapping("/{ticketId}/respond")
+    public ResponseEntity<String> respondToTicket(
+            @PathVariable Long ticketId,
+            @RequestParam Long agentId,
+            @RequestBody String responseText) {
+        String result = ticketService.respondToTicket(ticketId, agentId, responseText);
+        return ResponseEntity.ok(result);
+    }
+    @PostMapping("/{ticketId}/pause-sla")
+    public String pauseSlaTimer(@PathVariable Long ticketId, @RequestParam String reason) {
+        ticketService.pauseSlaTimer(ticketId, reason);
+        return "SLA timer paused successfully";
+    }
+
+    @PostMapping("/{ticketId}/resume-sla")
+    public String resumeSlaTimer(@PathVariable Long ticketId) {
+        ticketService.resumeSlaTimer(ticketId);
+        return "SLA timer resumed successfully";
+    }
+
+    @GetMapping("/{ticketId}/sla-status")
+    public String getSlaBreachStatus(@PathVariable Long ticketId) {
+        return ticketService.getSlaBreachStatus(ticketId);
+    }
+    @PostMapping("/{ticketId}/assign")
+    public ResponseEntity<String> assignTicket(@PathVariable Long ticketId,
+                                               @RequestParam String agentEmail) {
+        try {
+            String response = ticketService.assignTicket(ticketId, agentEmail);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{ticketId}/start-work")
+    public ResponseEntity<String> startWorkOnTicket(@PathVariable Long ticketId) {
+        try {
+            String response = ticketService.startWorkOnTicket(ticketId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{ticketId}/complete")
+    public ResponseEntity<String> completeTicket(@PathVariable Long ticketId) {
+        try {
+            String response = ticketService.completeTicket(ticketId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

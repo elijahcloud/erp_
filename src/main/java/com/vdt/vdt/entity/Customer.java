@@ -25,7 +25,7 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "customer_account_type", nullable = false)
-    private AccountType accountType;
+    private CustomerAccountType accountType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "customer_tier", nullable = false)
@@ -73,4 +73,156 @@ public class Customer {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "customer_deleted_by", insertable = false, updatable = false)
     private User deletedByUser;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public CustomerAccountType getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(CustomerAccountType accountType) {
+        this.accountType = accountType;
+    }
+
+    public CustomerTier getCustomerTier() {
+        return customerTier;
+    }
+
+    public void setCustomerTier(CustomerTier customerTier) {
+        this.customerTier = customerTier;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public User getAgent() {
+        return agent;
+    }
+
+    public void setAgent(User agent) {
+        this.agent = agent;
+    }
+
+    public List<CustomerNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<CustomerNote> notes) {
+        this.notes = notes;
+    }
+
+    public CustomerBilling getBilling() {
+        return billing;
+    }
+
+    public void setBilling(CustomerBilling billing) {
+        this.billing = billing;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Long getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(Long createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
+    }
+
+    public void setCreatedByUser(User createdByUser) {
+        this.createdByUser = createdByUser;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public Long getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(Long updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public User getUpdatedByUser() {
+        return updatedByUser;
+    }
+
+    public void setUpdatedByUser(User updatedByUser) {
+        this.updatedByUser = updatedByUser;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public Long getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(Long deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public User getDeletedByUser() {
+        return deletedByUser;
+    }
+
+    public void setDeletedByUser(User deletedByUser) {
+        this.deletedByUser = deletedByUser;
+    }
 }

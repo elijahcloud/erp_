@@ -1,0 +1,92 @@
+package com.vdt.vdt.dto;
+
+import com.vdt.vdt.entity.TicketPriority;
+import com.vdt.vdt.entity.TicketType;
+import lombok.Data;
+
+@Data
+public class SlaPolicyRequest {
+
+    private TicketType ticketType;
+    private TicketPriority priority;
+    private String customerGroup;
+    private Long responseTimeTargetMinutes;
+    private Long resolutionTimeTargetMinutes;
+
+    private Boolean escalateToManager;
+    private Boolean reassignIfNoResponse;
+    private Boolean alertSupervisorIfCritical;
+    private Integer reassignThresholdHours;
+
+    public TicketType getTicketType() {
+        return ticketType;
+    }
+
+    public void setTicketType(TicketType ticketType) {
+        this.ticketType = ticketType;
+    }
+
+    public TicketPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TicketPriority priority) {
+        this.priority = priority;
+    }
+
+    public String getCustomerGroup() {
+        return customerGroup;
+    }
+
+    public void setCustomerGroup(String customerGroup) {
+        this.customerGroup = customerGroup;
+    }
+
+    public Long getResponseTimeTargetMinutes() {
+        return responseTimeTargetMinutes;
+    }
+
+    public void setResponseTimeTargetMinutes(Long responseTimeTargetMinutes) {
+        this.responseTimeTargetMinutes = responseTimeTargetMinutes;
+    }
+
+    public Long getResolutionTimeTargetMinutes() {
+        return resolutionTimeTargetMinutes;
+    }
+
+    public void setResolutionTimeTargetMinutes(Long resolutionTimeTargetMinutes) {
+        this.resolutionTimeTargetMinutes = resolutionTimeTargetMinutes;
+    }
+
+    public Boolean getEscalateToManager() {
+        return escalateToManager;
+    }
+
+    public void setEscalateToManager(Boolean escalateToManager) {
+        this.escalateToManager = escalateToManager;
+    }
+
+    public Boolean getReassignIfNoResponse() {
+        return reassignIfNoResponse;
+    }
+
+    public void setReassignIfNoResponse(Boolean reassignIfNoResponse) {
+        this.reassignIfNoResponse = reassignIfNoResponse;
+    }
+
+    public Boolean getAlertSupervisorIfCritical() {
+        return alertSupervisorIfCritical;
+    }
+
+    public void setAlertSupervisorIfCritical(Boolean alertSupervisorIfCritical) {
+        this.alertSupervisorIfCritical = alertSupervisorIfCritical;
+    }
+
+    public Integer getReassignThresholdHours() {
+        return reassignThresholdHours;
+    }
+
+    public void setReassignThresholdHours(Integer reassignThresholdHours) {
+        this.reassignThresholdHours = reassignThresholdHours;
+    }
+}
