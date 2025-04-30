@@ -1,10 +1,8 @@
 package com.vdt.vdt.config;
 
 import com.vdt.vdt.dto.SlaPolicyRequest;
-import com.vdt.vdt.entity.CustomerAccountType;
-import com.vdt.vdt.entity.SlaPolicy;
-import com.vdt.vdt.entity.TicketPriority;
-import com.vdt.vdt.entity.TicketType;
+import com.vdt.vdt.dto.TicketDetailDto;
+import com.vdt.vdt.entity.*;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.modelmapper.convention.MatchingStrategies;
@@ -37,6 +35,13 @@ public class ModelMapperConfig {
             return customerGroup != null ? CustomerAccountType.valueOf(customerGroup.toUpperCase()) : null;
         }, SlaPolicy::setCustomerGroup);
     });
+
+        modelMapper.typeMap(Ticket.class, TicketDetailDto.class).addMappings(mapper -> {
+            mapper.map(src -> {
+                User agent = src.getAssignedAgent();
+                return agent != null ? agent.getId() : null;
+            }, TicketDetailDto::setAssignedAgent);
+        });
         return modelMapper;
     }
 

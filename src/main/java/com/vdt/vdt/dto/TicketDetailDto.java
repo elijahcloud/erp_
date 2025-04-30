@@ -1,6 +1,5 @@
 package com.vdt.vdt.dto;
 
-import com.vdt.vdt.entity.Ticket;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,21 +24,6 @@ public class TicketDetailDto {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private List<CommentDto> comments;
-
-    public TicketDetailDto(Ticket ticket) {
-        this.id = ticket.getId();
-        this.ticketTitle = ticket.getTicketTitle();
-        this.description = ticket.getDescription();
-        this.status = String.valueOf(ticket.getStatus());
-        this.priority = String.valueOf(ticket.getPriority());
-        this.assignedAgent = ticket.getAssignedAgent().getId();
-        this.customerName = ticket.getCustomer() != null ? ticket.getCustomer().getName() : null;
-        this.createdAt = ticket.getCreatedAt();
-        this.assignedTo = ticket.getAssignedAgent().getId();
-        this.resolvingDepartment = ticket.getAssignedDepartment() != null
-                ? ticket.getAssignedDepartment().getName()
-                : "Unassigned";
-    }
 
 
     public Long getId() {

@@ -31,16 +31,16 @@ public class TicketController {
         return ResponseEntity.ok(ticketResponse);
     }
 
-    @PutMapping("/{id}/status")
-    public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam TicketStatus status) {
-        String updateMessage = ticketService.updateStatus(id, status);
+    @PutMapping("/{id}/tickets/update-status")
+    public ResponseEntity<String> updateStatus(@PathVariable Long id, @RequestParam String status) {
+        String updateMessage = ticketService.updateStatus(id, status.toUpperCase());
         return ResponseEntity.ok(updateMessage);
     }
     @GetMapping("/status/{ticketId}")
     public String checkTicketStatus(@PathVariable Long ticketId) {
         return ticketService.checkTicketStatus(ticketId);
     }
-    @PostMapping("add-comment/{id}/")
+    @PostMapping("add-comment/{id}")
     public ResponseEntity<Void> addComment(@PathVariable Long id, @RequestParam String authorName, @RequestBody String comment) {
         ticketService.addComment(id, comment, authorName);
         return ResponseEntity.ok().build();

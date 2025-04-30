@@ -171,9 +171,9 @@ public class TicketService {
     }
 
 
-    public String updateStatus(Long ticketId, TicketStatus newStatus) {
+    public String updateStatus(Long ticketId, String newStatus) {
         Ticket ticket = ticketRepository.findById(ticketId).orElseThrow();
-        ticket.setStatus(newStatus);
+        ticket.setStatus(TicketStatus.valueOf(newStatus));
         ticket.setUpdatedAt(LocalDateTime.now());
         ticketRepository.save(ticket);
         return String.format("Ticket has been updated to %s", newStatus);
@@ -188,6 +188,7 @@ public class TicketService {
         ticketComment.setTimestamp(LocalDateTime.now());
         ticketComment.setTicket(ticket);
         ticket.getComments().add(ticketComment);
+        ticketComment.setTicketId(ticket.getId());
         ticketRepository.save(ticket);
     }
 
