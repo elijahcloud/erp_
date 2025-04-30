@@ -170,9 +170,90 @@ public class Tenant {
     @JsonIgnore
     private List<UserTenant> userTenants;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TenantDomain> tenantDomains;
+
+    @Basic
+    @Column(name = "tenant_address") // Correct column name
+    private String address;
+
+    @Basic
+    @Column(name = "tenant_logo", length = 255)
+    private String logo;
+
+    private String alias;
+    private String phoneNumber;
+    private String description;
+    private Long sectorId;
+    private Long subSectorId;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getSectorId() {
+        return sectorId;
+    }
+
+    public void setSectorId(Long sectorId) {
+        this.sectorId = sectorId;
+    }
+
+    public Long getSubSectorId() {
+        return subSectorId;
+    }
+
+    public void setSubSectorId(Long subSectorId) {
+        this.subSectorId = subSectorId;
+    }
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<SubscriptionService> subscriptionServices;
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "tenant")
+    List<Customer> customers;
 
     @PrePersist
     public void prePersist() {
@@ -211,5 +292,9 @@ public class Tenant {
         userTenant.setIsPrimary(isPrimary); // Set primary flag
         userTenant.setCreatedAt(LocalDateTime.now()); // Set createdAt timestamp
         this.userTenants.add(userTenant);
+    }
+
+    public Tenant(Long id) {
+        this.id = id;
     }
 }

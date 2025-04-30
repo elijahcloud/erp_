@@ -3,17 +3,6 @@
 -- Database Schema Initialization
 -- ============================
 
--- Department Table
-CREATE TABLE departments (
-    department_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    department_name VARCHAR(255) NOT NULL,
-    department_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
-    department_created_by BIGINT DEFAULT NULL,
-    department_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
-    department_updated_by BIGINT DEFAULT NULL,
-    department_deleted_at DATETIME DEFAULT NULL,
-    department_deleted_by BIGINT DEFAULT NULL
-);
 
 -- Tickets Table
 CREATE TABLE tickets (
@@ -50,14 +39,6 @@ CREATE TABLE ticket_comments (
     ticket_comment_deleted_by BIGINT DEFAULT NULL
 );
 
--- Add Foreign Keys for departments
-ALTER TABLE departments
-ADD CONSTRAINT fk_departments_created_by
-FOREIGN KEY (department_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT fk_departments_updated_by
-FOREIGN KEY (department_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT fk_departments_deleted_by
-FOREIGN KEY (department_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- Add Foreign Keys for tickets
 ALTER TABLE tickets

@@ -43,4 +43,9 @@ public class Permission {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "permission_updated_by")
     private User updatedBy;
+
+    // Add a constructor that accepts an ID
+    public Permission(Long id) {
+        this.id = id;
+    }
 }

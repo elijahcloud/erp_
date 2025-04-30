@@ -1,5 +1,6 @@
 package com.vdt.vdt.controller;
 
+import com.vdt.vdt.dto.CustomerRequestDTO;
 import com.vdt.vdt.entity.Customer;
 import com.vdt.vdt.dto.CustomerDTO;
 import com.vdt.vdt.service.CustomerService;
@@ -20,10 +21,10 @@ public class CustomerController {
     CustomerService customerService;
 
     @PostMapping("/api/customer")
-    public ResponseEntity<?> createCustomer(@RequestBody CustomerDTO customerDTO){
+    public ResponseEntity<?> createCustomer(@RequestBody CustomerRequestDTO customerDTO){
         try {
-            Customer customer = customerService.addNewCustomer(customerDTO);
-            return ResponseEntity.ok(CustomerDTO.getCustomerDTO(customer));
+            CustomerDTO customer = customerService.addNewCustomer(customerDTO);
+            return ResponseEntity.ok(customer);
         }catch (UsernameNotFoundException e){
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -32,16 +33,16 @@ public class CustomerController {
     }
 
     @GetMapping("/api/customer")
-    public Page<CustomerDTO> getCustomers(Pageable pageable) {
+    public Page<CustomerDTO> getCustomers(@RequestParam Long tenantId, Pageable pageable) {
         List<CustomerDTO> customerDTOList = new ArrayList<>();
-        return customerService.getAllCustomers(pageable).map(CustomerDTO::getCustomerDTO);
+        return customerService.getAllCustomers(tenantId,pageable);
     }
 
     @GetMapping("/api/customer/{id}")
     public ResponseEntity<?> getCustomer(@PathVariable Long id){
         try {
-            Customer customer = customerService.getCustomerById(id);
-            return ResponseEntity.ok(CustomerDTO.getCustomerDTO(customer));
+            CustomerDTO customer = customerService.getCustomerById(id);
+            return ResponseEntity.ok(customer);
         }catch (UsernameNotFoundException e){
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
@@ -50,13 +51,13 @@ public class CustomerController {
     }
 
     @PatchMapping("/api/customer/{id}")
-    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody CustomerDTO customerDTO) {
+    public ResponseEntity<?> updateCustomer(@PathVariable Long id, @RequestBody CustomerRequestDTO customerDTO) {
         try {
             // Ensure the ID from path is set in DTO (in case it's not passed in the body)
-            customerDTO.setId(id);
+            //customerDTO.setId(id);
 
-            Customer updatedCustomer = customerService.updateCustomer(customerDTO);
-            return ResponseEntity.ok(CustomerDTO.getCustomerDTO(updatedCustomer));
+            CustomerDTO updatedCustomer = customerService.updateCustomer(id,customerDTO);
+            return ResponseEntity.ok(updatedCustomer);
         } catch (UsernameNotFoundException ex) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
         } catch (Exception ex) {

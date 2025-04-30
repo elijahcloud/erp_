@@ -42,6 +42,19 @@ public class UserTenant {
     @JoinColumn(name = "user_tenant_deleted_by")
     private User deletedBy;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "created_by", columnDefinition = "BIGINT")
+    private User createdBy;
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+
     public Long getId() {
         return id;
     }

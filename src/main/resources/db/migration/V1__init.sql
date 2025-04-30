@@ -7,7 +7,7 @@
 CREATE TABLE users (
   user_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_email VARCHAR(255) UNIQUE NOT NULL,
-  user_password TEXT NOT NULL,
+  user_password TEXT NULL,
   user_is_active TINYINT(1) DEFAULT 1,
   user_active_user_role_id BIGINT DEFAULT NULL,
   user_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -18,25 +18,83 @@ CREATE TABLE users (
   user_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
+-- Create tenants table
 CREATE TABLE tenants (
-  tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
-  tenant_name VARCHAR(255) NOT NULL,
-  tenant_code VARCHAR(100) UNIQUE NOT NULL,
-  tenant_is_landlord TINYINT(1) DEFAULT 0,
-  tenant_is_active TINYINT(1) DEFAULT 1,
-  tenant_logo VARCHAR(255) DEFAULT NULL,
-  tenant_contact_email VARCHAR(70) DEFAULT NULL,
-  tenant_contact_phone VARCHAR(20) DEFAULT NULL,
-  tenant_address VARCHAR(255) DEFAULT NULL,
-  tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  tenant_created_by BIGINT DEFAULT NULL,
-  tenant_updated_at DATETIME DEFAULT NULL,
-  tenant_updated_by BIGINT DEFAULT NULL,
-  tenant_deleted_at DATETIME DEFAULT NULL,
-  tenant_deleted_by BIGINT DEFAULT NULL
+    tenant_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tenant_name VARCHAR(255) NOT NULL,
+    tenant_code VARCHAR(100) UNIQUE NOT NULL,
+    tenant_logo VARCHAR(255) DEFAULT NULL,
+    tenant_is_landlord TINYINT(1) DEFAULT 0,
+    tenant_is_active TINYINT(1) DEFAULT 1,
+    tenant_contact_email VARCHAR(70) DEFAULT NULL,
+    tenant_contact_phone VARCHAR(20) DEFAULT NULL,
+    tenant_address VARCHAR(255) DEFAULT NULL,
+    tenant_description TEXT DEFAULT NULL,
+    tenant_sector_id BIGINT DEFAULT NULL,
+    tenant_sub_sector_id BIGINT DEFAULT NULL,
+    tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    tenant_created_by BIGINT DEFAULT NULL,
+    tenant_updated_at DATETIME DEFAULT NULL,
+    tenant_updated_by BIGINT DEFAULT NULL,
+    tenant_deleted_at DATETIME DEFAULT NULL,
+    tenant_deleted_by BIGINT DEFAULT NULL
+) ENGINE=InnoDB;
+
+-- Create sectors table
+CREATE TABLE sectors (
+    sector_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sector_name VARCHAR(255) NOT NULL,
+    sector_description TEXT DEFAULT NULL,
+    sector_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sector_created_by BIGINT DEFAULT NULL,
+    sector_updated_at DATETIME DEFAULT NULL,
+    sector_updated_by BIGINT DEFAULT NULL,
+    sector_deleted_at DATETIME DEFAULT NULL,
+    sector_deleted_by BIGINT DEFAULT NULL
+);
+
+-- Create sub_sectors table
+CREATE TABLE sub_sectors (
+    sub_sector_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    sub_sector_name VARCHAR(255) NOT NULL,
+    sub_sector_description TEXT DEFAULT NULL,
+    sub_sector_sector_id BIGINT NOT NULL,
+    sub_sector_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    sub_sector_created_by BIGINT DEFAULT NULL,
+    sub_sector_updated_at DATETIME DEFAULT NULL,
+    sub_sector_updated_by BIGINT DEFAULT NULL,
+    sub_sector_deleted_at DATETIME DEFAULT NULL,
+    sub_sector_deleted_by BIGINT DEFAULT NULL
+) ENGINE=InnoDB;
+
+-- Department Table
+CREATE TABLE departments (
+    department_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    department_name VARCHAR(255) NOT NULL,
+    department_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    department_created_by BIGINT DEFAULT NULL,
+    department_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
+    department_updated_by BIGINT DEFAULT NULL,
+    department_deleted_at DATETIME DEFAULT NULL,
+    department_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 -- Create dependent tables
+
+CREATE TABLE tenant_setting (
+    tenant_setting_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tenant_setting_tenant_id BIGINT NOT NULL,
+    tenant_setting_min_password_length INT DEFAULT 8,
+    tenant_setting_require_special_characters BOOLEAN DEFAULT FALSE,
+    tenant_setting_require_numbers BOOLEAN DEFAULT FALSE,
+    tenant_setting_require_uppercase_letters BOOLEAN DEFAULT FALSE,
+    tenant_setting_session_timeout_minutes INT DEFAULT 30,
+    tenant_setting_require_mfa BOOLEAN DEFAULT FALSE,
+    tenant_setting_dark_mode_enabled BOOLEAN DEFAULT FALSE,
+    tenant_setting_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    tenant_setting_updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB;
+
 CREATE TABLE roles (
   role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   role_name VARCHAR(100) UNIQUE NOT NULL,
@@ -50,7 +108,6 @@ CREATE TABLE roles (
   role_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
-
 CREATE TABLE user_roles (
   user_role_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   user_role_user_id BIGINT NOT NULL,
@@ -61,11 +118,7 @@ CREATE TABLE user_roles (
   user_role_updated_at DATETIME DEFAULT NULL,
   user_role_updated_by BIGINT DEFAULT NULL,
   user_role_deleted_at DATETIME DEFAULT NULL,
-  user_role_deleted_by BIGINT DEFAULT NULL,
-  CONSTRAINT fk_user_roles_user FOREIGN KEY (user_role_user_id) REFERENCES users(user_id),
-  CONSTRAINT fk_user_roles_tenant FOREIGN KEY (user_role_tenant_id) REFERENCES tenants(tenant_id),
-  CONSTRAINT fk_user_roles_role FOREIGN KEY (user_role_role_id) REFERENCES roles(role_id),
-  CONSTRAINT uc_user_role_tenant UNIQUE (user_role_user_id, user_role_tenant_id, user_role_role_id)
+  user_role_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE tenant_domains (
@@ -86,15 +139,14 @@ CREATE TABLE user_tenants (
   user_tenant_user_id BIGINT NOT NULL,
   user_tenant_tenant_id BIGINT NOT NULL,
   user_tenant_is_primary TINYINT(1) DEFAULT 0,
+  user_tenant_department_id BIGINT DEFAULT NULL,
+  user_tenant_position VARCHAR(255) DEFAULT NULL,
   user_tenant_created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
   user_tenant_created_by BIGINT DEFAULT NULL,
   user_tenant_updated_at DATETIME DEFAULT NULL,
   user_tenant_updated_by BIGINT DEFAULT NULL,
   user_tenant_deleted_at DATETIME DEFAULT NULL,
-  user_tenant_deleted_by BIGINT DEFAULT NULL,
-  CONSTRAINT fk_user_tenants_user FOREIGN KEY (user_tenant_user_id) REFERENCES users(user_id),
-  CONSTRAINT fk_user_tenants_tenant FOREIGN KEY (user_tenant_tenant_id) REFERENCES tenants(tenant_id),
-  CONSTRAINT uc_user_tenant UNIQUE (user_tenant_user_id, user_tenant_tenant_id)
+  user_tenant_deleted_by BIGINT DEFAULT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE permissions (
@@ -114,10 +166,7 @@ CREATE TABLE permissions (
 CREATE TABLE role_permissions (
   role_permission_id BIGINT AUTO_INCREMENT PRIMARY KEY,
   role_permission_role_id BIGINT NOT NULL,
-  role_permission_permission_id BIGINT NOT NULL,
-  CONSTRAINT fk_role_permissions_role FOREIGN KEY (role_permission_role_id) REFERENCES roles(role_id),
-  CONSTRAINT fk_role_permissions_permission FOREIGN KEY (role_permission_permission_id) REFERENCES permissions(permission_id),
-  CONSTRAINT uc_role_permission UNIQUE (role_permission_role_id, role_permission_permission_id)
+  role_permission_permission_id BIGINT NOT NULL
 ) ENGINE=InnoDB;
 
 CREATE TABLE audit_logs (
@@ -135,7 +184,7 @@ CREATE TABLE audit_logs (
 ALTER TABLE tenants ADD INDEX idx_tenant_id (tenant_id);
 ALTER TABLE users ADD INDEX idx_user_id (user_id);
 
--- Add foreign key constraints after all tables are created
+-- Move all ALTER TABLE statements here
 ALTER TABLE users
     ADD CONSTRAINT fk_user_created_by FOREIGN KEY (user_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_user_updated_by FOREIGN KEY (user_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -145,7 +194,20 @@ ALTER TABLE users
 ALTER TABLE tenants
     ADD CONSTRAINT fk_tenant_created_by FOREIGN KEY (tenant_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_tenant_updated_by FOREIGN KEY (tenant_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-    ADD CONSTRAINT fk_tenant_deleted_by FOREIGN KEY (tenant_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
+    ADD CONSTRAINT fk_tenant_deleted_by FOREIGN KEY (tenant_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_tenant_sector FOREIGN KEY (tenant_sector_id) REFERENCES sectors(sector_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_tenant_sub_sector FOREIGN KEY (tenant_sub_sector_id) REFERENCES sub_sectors(sub_sector_id) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE sub_sectors
+    ADD CONSTRAINT fk_sub_sector_sector FOREIGN KEY (sub_sector_sector_id) REFERENCES sectors(sector_id) ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE departments
+    ADD CONSTRAINT fk_departments_created_by FOREIGN KEY (department_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_departments_updated_by FOREIGN KEY (department_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_departments_deleted_by FOREIGN KEY (department_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE tenant_setting
+    ADD CONSTRAINT fk_tenant_setting_tenant_id FOREIGN KEY (tenant_setting_tenant_id) REFERENCES tenants(tenant_id) ON DELETE CASCADE;
 
 ALTER TABLE roles
     ADD CONSTRAINT fk_role_created_by FOREIGN KEY (role_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
@@ -153,24 +215,39 @@ ALTER TABLE roles
     ADD CONSTRAINT fk_role_deleted_by FOREIGN KEY (role_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE user_roles
+    ADD CONSTRAINT fk_user_roles_user FOREIGN KEY (user_role_user_id) REFERENCES users(user_id),
+    ADD CONSTRAINT fk_user_roles_tenant FOREIGN KEY (user_role_tenant_id) REFERENCES tenants(tenant_id),
+    ADD CONSTRAINT fk_user_roles_role FOREIGN KEY (user_role_role_id) REFERENCES roles(role_id),
+    ADD CONSTRAINT uc_user_role_tenant UNIQUE (user_role_user_id, user_role_tenant_id, user_role_role_id),
     ADD CONSTRAINT fk_user_role_created_by FOREIGN KEY (user_role_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_user_role_updated_by FOREIGN KEY (user_role_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_user_role_deleted_by FOREIGN KEY (user_role_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
-
-ALTER TABLE user_tenants
-    ADD CONSTRAINT fk_user_tenant_created_by FOREIGN KEY (user_tenant_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-    ADD CONSTRAINT fk_user_tenant_updated_by FOREIGN KEY (user_tenant_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-    ADD CONSTRAINT fk_user_tenant_deleted_by FOREIGN KEY (user_tenant_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
 
 ALTER TABLE tenant_domains
     ADD CONSTRAINT fk_domain_created_by FOREIGN KEY (tenant_domain_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_domain_updated_by FOREIGN KEY (tenant_domain_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_domain_deleted_by FOREIGN KEY (tenant_domain_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
 
+
+
+ALTER TABLE user_tenants
+    ADD CONSTRAINT fk_user_tenants_user FOREIGN KEY (user_tenant_user_id) REFERENCES users(user_id),
+    ADD CONSTRAINT fk_user_tenants_tenant FOREIGN KEY (user_tenant_tenant_id) REFERENCES tenants(tenant_id),
+    ADD CONSTRAINT uc_user_tenant UNIQUE (user_tenant_user_id, user_tenant_tenant_id),
+    ADD CONSTRAINT fk_user_tenant_created_by FOREIGN KEY (user_tenant_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_user_tenant_updated_by FOREIGN KEY (user_tenant_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_user_tenant_deleted_by FOREIGN KEY (user_tenant_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
+    ADD CONSTRAINT fk_user_tenant_department FOREIGN KEY (user_tenant_department_id) REFERENCES departments(department_id) ON DELETE SET NULL ON UPDATE CASCADE;
+
 ALTER TABLE permissions
     ADD CONSTRAINT fk_permission_created_by FOREIGN KEY (permission_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_permission_updated_by FOREIGN KEY (permission_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
     ADD CONSTRAINT fk_permission_deleted_by FOREIGN KEY (permission_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
+
+ALTER TABLE role_permissions
+    ADD CONSTRAINT fk_role_permissions_role FOREIGN KEY (role_permission_role_id) REFERENCES roles(role_id),
+    ADD CONSTRAINT fk_role_permissions_permission FOREIGN KEY (role_permission_permission_id) REFERENCES permissions(permission_id),
+    ADD CONSTRAINT uc_role_permission UNIQUE (role_permission_role_id, role_permission_permission_id);
 
 -- Seed initial roles
 INSERT INTO roles (role_name, role_description, role_scope, role_created_at, role_created_by, role_updated_by)
@@ -238,3 +315,19 @@ SELECT tenant_id, 'vdt.com', 1, NOW()
 FROM tenants
 WHERE tenant_code = 'VDT001'
 ON DUPLICATE KEY UPDATE tenant_domain_name = tenant_domain_name;
+
+-- Seed initial departments
+INSERT INTO departments (
+    department_name,
+    department_created_at,
+    department_created_by,
+    department_updated_at,
+    department_updated_by
+) VALUES
+    ('HR', NOW(), NULL, NOW(), NULL),
+    ('IT', NOW(), NULL, NOW(), NULL),
+    ('Finance', NOW(), NULL, NOW(), NULL),
+    ('Sales', NOW(), NULL, NOW(), NULL),
+    ('Operations', NOW(), NULL, NOW(), NULL),
+    ('Support', NOW(), NULL, NOW(), NULL),
+    ('Others', NOW(), NULL, NOW(), NULL);

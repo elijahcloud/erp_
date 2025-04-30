@@ -1,7 +1,12 @@
 package com.vdt.vdt.dto;
 
 import com.vdt.vdt.entity.Customer;
+import com.vdt.vdt.entity.KYC;
+import com.vdt.vdt.entity.ERPServiceType;
+import com.vdt.vdt.entity.SubscriptionService;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class CustomerDTO {
@@ -13,6 +18,12 @@ public class CustomerDTO {
     String accountType;
     String customerTier;
     String accountNumber;
+    List<SubscriptionService> subscriptionServices;
+    KYC kyc;
+
+    public void addSubscriptionService(SubscriptionService subscriptionService){
+        subscriptionServices.add(subscriptionService);
+    }
 
     public static CustomerDTO getCustomerDTO(Customer customer) {
         System.out.println("Converting Customer to CustomerDTO: " + customer);

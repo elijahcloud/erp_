@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -13,7 +14,11 @@ public class RoleDto {
     private String description;
     private String type;
     private int userCount;
+    private Long createdBy;
+    private Long deletedBy;
+    private Long updatedBy;
     private LocalDateTime createdAt;
+    private List<Long> permissionIds;
 
     public Long getId() {
         return id;
@@ -61,5 +66,13 @@ public class RoleDto {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<Long> getPermissionIds() {
+        return permissionIds;
+    }
+
+    public void setPermissionIds(List<Long> permissionIds) {
+        this.permissionIds = permissionIds;
     }
 }
