@@ -63,3 +63,20 @@ CREATE TABLE subscription_services (
 );
 
 
+CREATE TABLE customer_celebrations (
+    celebration_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    celebration_type VARCHAR(255),
+    custom_label VARCHAR(255),
+    date DATE NOT NULL,
+    reminder_in_days BIGINT,
+    note TEXT,
+    customer_id_ref BIGINT,
+
+    CONSTRAINT fk_customer
+        FOREIGN KEY (customer_id_ref)
+        REFERENCES customers (customer_id)
+);
+
+
+
+

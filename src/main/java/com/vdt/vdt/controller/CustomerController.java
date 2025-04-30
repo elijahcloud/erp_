@@ -4,6 +4,7 @@ import com.vdt.vdt.dto.CustomerRequestDTO;
 import com.vdt.vdt.entity.Customer;
 import com.vdt.vdt.dto.CustomerDTO;
 import com.vdt.vdt.service.CustomerService;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,10 +26,10 @@ public class CustomerController {
         try {
             CustomerDTO customer = customerService.addNewCustomer(customerDTO);
             return ResponseEntity.ok(customer);
-        }catch (UsernameNotFoundException e){
+        }catch (EntityNotFoundException e){
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
-                    .body("Agent with ID " + customerDTO.getUserAgentId() + " not found.");
+                    .body(e.getMessage());
         }
     }
 
