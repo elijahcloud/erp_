@@ -1,6 +1,5 @@
 package com.vdt.vdt.entity;
 
 public enum AccountType {
-    RETAIL, SME, ENTERPRISE
-
+    RETAIL, SME, ENTERPRISE, GOVERNMENT, NONPROFIT
 }

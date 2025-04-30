@@ -55,7 +55,7 @@ public class CustomerNoteController {
         }
     }
 
-    @PutMapping("/{noteId}")
+    @PatchMapping("/{noteId}")
     public ResponseEntity<?> updateNote(
             @PathVariable Long noteId,
             @RequestBody CustomerNoteDTO noteDTO) {

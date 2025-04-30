@@ -1,18 +1,17 @@
 package com.vdt.vdt.service;
 
-import com.vdt.vdt.entity.Customer;
+import com.vdt.vdt.dto.CustomerRequestDTO;
+import com.vdt.vdt.entity.*;
 import com.vdt.vdt.dto.CustomerDTO;
-import com.vdt.vdt.repository.CustomerRepository;
-import com.vdt.vdt.entity.User;
-import com.vdt.vdt.repository.UserRepository;
+import com.vdt.vdt.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import com.vdt.vdt.entity.AccountType; // Ensure this import matches the actual package of AccountType
-import com.vdt.vdt.entity.CustomerTier; // Ensure this import matches the actual package of CustomerTier
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,10 +23,27 @@ public class CustomerService {
     @Autowired
     UserRepository userRepository;
 
-    public Customer addNewCustomer(CustomerDTO customerDTO) {
+    @Autowired
+    ERPServiceTypeRepository erpServiceTypeRepository;
+
+    @Autowired
+    SubscriptionServiceRepository subscriptionServiceRepository;
+
+    @Autowired
+    KYCRepository kycRepository;
+
+    @Autowired
+    TenantRepository tenantRepository;
+
+    public CustomerDTO addNewCustomer(CustomerRequestDTO customerDTO) {
         System.out.println("Starting addNewCustomer with CustomerDTO: " + customerDTO);
 
         Customer customer = new Customer();
+        KYC kyc = new KYC();
+        SubscriptionService subscriptionService = new SubscriptionService();
+
+        //Fetch Tenant
+        Tenant tenant = tenantRepository.findById(customerDTO.getTenantId()).orElseThrow(()->new EntityNotFoundException("Tenant With Id not found"));
 
         // Fetch Tenant User agent
         Optional<User> userOptional = userRepository.findById(customerDTO.getUserAgentId().toString());
@@ -42,6 +58,8 @@ public class CustomerService {
             customer.setCustomerTier(CustomerTier.valueOf(customerDTO.getCustomerTier()));
             customer.setAccountType(AccountType.valueOf(customerDTO.getAccountType()));
             customer.setAccountNumber(customerDTO.getAccountNumber());
+            customer.setTenant(tenant);
+
         } else {
             String errorMessage = "User Agent with ID " + customerDTO.getUserAgentId() + " not found.";
             System.out.println(errorMessage);
@@ -49,23 +67,40 @@ public class CustomerService {
         }
 
         Customer savedCustomer = customerRepository.save(customer);
-        System.out.println("Customer saved successfully: " + savedCustomer);
-        return savedCustomer;
+
+        kyc.setKycPackage(customerDTO.getKycPackageType());
+        kyc.setCustomer(savedCustomer);
+        kyc.setKycStatus(KYCStatus.PENDING);
+        kycRepository.save(kyc);
+
+        //Fetch all ERPServiceTypes
+        customerDTO.getServiceTypeId().forEach((erpServiceTypeId)->{
+            ERPServiceType erpServiceType = erpServiceTypeRepository.findById(erpServiceTypeId).orElseThrow(()->new EntityNotFoundException("Service Type Not Found"));
+            SubscriptionService subscriptionService1 = new SubscriptionService();
+            subscriptionService1.setCreatedAt(LocalDateTime.now());
+            subscriptionService1.setErpServiceType(erpServiceType);
+            subscriptionService1.setCustomer(savedCustomer);
+            subscriptionService1.setTenant(tenant);
+            subscriptionService1.setBillingCycle(customerDTO.getBillingCycleType());
+            subscriptionServiceRepository.save(subscriptionService1);
+        });
+
+        System.out.println("Customer saved successfully: ");
+        return getCustomerDTO(savedCustomer);
     }
 
-    public Page<Customer> getAllCustomers(Pageable pageable) {
+    public Page<CustomerDTO> getAllCustomers(Long tenantId, Pageable pageable) {
         System.out.println("Fetching all customers with pageable: " + pageable);
-        return customerRepository.findAll(pageable);
+        return customerRepository.findByTenantId(tenantId,pageable).map(this::getCustomerDTO);
     }
 
-    public Customer getCustomerById(Long id) {
+    public CustomerDTO getCustomerById(Long id) {
         System.out.println("Fetching customer by ID: " + id);
 
         Optional<Customer> customerOptional = customerRepository.findById(id);
         if (customerOptional.isPresent()) {
             Customer customer = customerOptional.get();
-            System.out.println("Customer found: " + customer);
-            return customer;
+            return getCustomerDTO(customer);
         } else {
             String errorMessage = "Customer with ID " + id + " not found.";
             System.out.println(errorMessage);
@@ -73,13 +108,13 @@ public class CustomerService {
         }
     }
 
-    public Customer updateCustomer(CustomerDTO customerDTO) throws UsernameNotFoundException {
+    public CustomerDTO updateCustomer(Long id, CustomerRequestDTO customerDTO) throws UsernameNotFoundException {
         System.out.println("Starting updateCustomer with CustomerDTO: " + customerDTO);
 
         // Fetch existing customer by ID
-        Customer existingCustomer = customerRepository.findById(customerDTO.getId())
+        Customer existingCustomer = customerRepository.findById(id)
                 .orElseThrow(() -> {
-                    String errorMessage = "Customer not found with ID: " + customerDTO.getId();
+                    String errorMessage = "Customer not found with ID: " + id;
                     System.out.println(errorMessage);
                     return new UsernameNotFoundException(errorMessage);
                 });
@@ -111,11 +146,33 @@ public class CustomerService {
 
         Customer updatedCustomer = customerRepository.save(existingCustomer);
         System.out.println("Customer updated successfully: " + updatedCustomer);
-        return updatedCustomer;
+        return getCustomerDTO(updatedCustomer);
     }
 
     public Customer findById(Long customerId) {
         return customerRepository.findById(customerId)
                 .orElseThrow(() -> new RuntimeException("Customer not found with ID: " + customerId));
+    }
+
+    public CustomerDTO getCustomerDTO(Customer customer) {
+        //System.out.println("Converting Customer to CustomerDTO: " + customer);
+
+        CustomerDTO customerDTO = new CustomerDTO();
+        customerDTO.setId(customer.getId());
+        customerDTO.setName(customer.getName());
+        customerDTO.setEmail(customer.getEmail());
+        customerDTO.setPhoneNumber(customer.getPhoneNumber());
+        customerDTO.setCustomerTier(customer.getCustomerTier().toString());
+        customerDTO.setAccountType(customer.getAccountType().toString());
+        customerDTO.setUserAgentId(customer.getAgent().getId());
+        customerDTO.setAccountNumber(customer.getAccountNumber());
+        customerDTO.setKyc(kycRepository.findByCustomerId(customerDTO.getId()).get());
+
+        customerDTO.setSubscriptionServices(subscriptionServiceRepository.findByCustomerId(customer.getId()));
+
+
+
+        System.out.println("Converted CustomerDTO: " + customerDTO);
+        return customerDTO;
     }
 }

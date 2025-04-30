@@ -67,6 +67,7 @@ public class Tenant {
     @JsonIgnore
     private List<UserTenant> userTenants;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<TenantDomain> tenantDomains;
@@ -140,6 +141,16 @@ public class Tenant {
     public void setSubSectorId(Long subSectorId) {
         this.subSectorId = subSectorId;
     }
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<SubscriptionService> subscriptionServices;
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "tenant")
+    List<Customer> customers;
 
     @PrePersist
     public void prePersist() {
