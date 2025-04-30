@@ -55,7 +55,7 @@ public class CustomerCelebrationController {
     }
     
     
-    @PutMapping("/{celebrationId}")
+    @PatchMapping("/{celebrationId}")
     public ResponseEntity<?> updateCelebration(
             @PathVariable Long customerId,
             @PathVariable Long celebrationId,
