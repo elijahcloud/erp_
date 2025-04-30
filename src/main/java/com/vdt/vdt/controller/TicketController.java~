@@ -40,7 +40,7 @@ public class TicketController {
     public String checkTicketStatus(@PathVariable Long ticketId) {
         return ticketService.checkTicketStatus(ticketId);
     }
-    @PostMapping("add-comment/{id}/")
+    @PostMapping("/{id}/comment")
     public ResponseEntity<Void> addComment(@PathVariable Long id, @RequestParam String authorName, @RequestBody String comment) {
         ticketService.addComment(id, comment, authorName);
         return ResponseEntity.ok().build();

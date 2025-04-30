@@ -9,6 +9,7 @@ public class CreateTicketRequest {
     private String description;
     private String priority;
     private Long customerId;
+    private String assignedAgentEmail;
 
     public String getTicketTitle() {
         return ticketTitle;
@@ -50,4 +51,11 @@ public class CreateTicketRequest {
         this.customerId = customerId;
     }
 
+    public String getAssignedAgentEmail() {
+        return assignedAgentEmail;
+    }
+
+    public void setAssignedAgentEmail(String assignedAgentEmail) {
+        this.assignedAgentEmail = assignedAgentEmail;
+    }
 }

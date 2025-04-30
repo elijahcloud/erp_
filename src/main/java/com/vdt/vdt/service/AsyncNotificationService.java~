@@ -4,6 +4,7 @@ import com.vdt.vdt.entity.Ticket;
 import com.vdt.vdt.entity.User;
 import com.vdt.vdt.repository.TicketRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;

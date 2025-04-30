@@ -58,15 +58,15 @@ public class RoleService {
     private RoleDto mapToDto(Role role) {
         Long userCount = roleRepository.countUsersByRoleId(role.getId());
 
-//        return modelMapper.map(role, RoleDto.class);
-        return RoleDto.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .description(role.getDescription())
-                .type(role.getType())
-                .userCount(userCount.intValue()) // Set user count
-                .createdAt(role.getCreatedAt())
-                .build();
+        return modelMapper.map(role, RoleDto.class);
+//        return RoleDto.builder()
+//                .id(role.getId())
+//                .name(role.getName())
+//                .description(role.getDescription())
+//                .type(role.getType())
+//                .userCount(userCount.intValue()) // Set user count
+//                .createdAt(role.getCreatedAt())
+//                .build();
     }
 
 }

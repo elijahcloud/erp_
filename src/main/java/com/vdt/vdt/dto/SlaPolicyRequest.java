@@ -1,34 +1,59 @@
 package com.vdt.vdt.dto;
 
-import com.vdt.vdt.entity.TicketPriority;
-import com.vdt.vdt.entity.TicketType;
+
 import lombok.Data;
 
 @Data
 public class SlaPolicyRequest {
 
-    private TicketType ticketType;
-    private TicketPriority priority;
+    private String ticketType;
+    private String priority;
     private String customerGroup;
-    private Long responseTimeTargetMinutes;
-    private Long resolutionTimeTargetMinutes;
+    private long responseTimeTargetInMinutes;
+    private long resolutionTimeTargetInMinutes;
+    private Integer reassignThresholdHours;
 
+    public Integer getReassignThresholdHours() {
+        return reassignThresholdHours;
+    }
 
-    public TicketType getTicketType() {
+    public void setReassignThresholdHours(Integer reassignThresholdHours) {
+        this.reassignThresholdHours = reassignThresholdHours;
+    }
+
+    public long getResponseTimeTargetInMinutes() {
+        return responseTimeTargetInMinutes;
+    }
+
+    public void setResponseTimeTargetInMinutes(long responseTimeTargetInMinutes) {
+        this.responseTimeTargetInMinutes = responseTimeTargetInMinutes;
+    }
+
+    public long getResolutionTimeTargetInMinutes() {
+        return resolutionTimeTargetInMinutes;
+    }
+
+    public void setResolutionTimeTargetInMinutes(long resolutionTimeTargetInMinutes) {
+        this.resolutionTimeTargetInMinutes = resolutionTimeTargetInMinutes;
+    }
+
+    public String getTicketType() {
         return ticketType;
     }
 
-    public void setTicketType(TicketType ticketType) {
+    public void setTicketType(String ticketType) {
         this.ticketType = ticketType;
     }
 
-    public TicketPriority getPriority() {
+    public String getPriority() {
         return priority;
     }
 
-    public void setPriority(TicketPriority priority) {
+    public void setPriority(String priority) {
         this.priority = priority;
     }
+
+
 
     public String getCustomerGroup() {
         return customerGroup;
@@ -38,17 +63,7 @@ public class SlaPolicyRequest {
         this.customerGroup = customerGroup;
     }
 
-    public Long getResponseTimeTargetMinutes() {
-        return responseTimeTargetMinutes;
-    }
 
-    public void setResponseTimeTargetMinutes(Long responseTimeTargetMinutes) {
-        this.responseTimeTargetMinutes = responseTimeTargetMinutes;
-    }
-
-    public Long getResolutionTimeTargetMinutes() {
-        return resolutionTimeTargetMinutes;
-    }
 
 
 }

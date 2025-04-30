@@ -47,6 +47,22 @@ public class Ticket {
     @JoinColumn(name = "ticket_assigned_department_id")
     private Department assignedDepartment;
 
+    public long getResolutionTimeMinutes() {
+        return resolutionTimeMinutes;
+    }
+
+    public void setResolutionTimeMinutes(long resolutionTimeMinutes) {
+        this.resolutionTimeMinutes = resolutionTimeMinutes;
+    }
+
+    public long getResponseTimeMinutes() {
+        return responseTimeMinutes;
+    }
+
+    public void setResponseTimeMinutes(long responseTimeMinutes) {
+        this.responseTimeMinutes = responseTimeMinutes;
+    }
+
     @OneToOne
     @JoinColumn(name = "ticket_assigned_agent")
     private User assignedAgent;
@@ -102,13 +118,6 @@ public class Ticket {
 
     private long responseTimeMinutes;
     private long resolutionTimeMinutes;
-
-
-//    private Boolean escalateToManager;
-//    private Boolean reassignIfNoResponse;
-//    private Boolean alertSupervisorIfCritical;
-
-
 
     public Long getId() {
         return id;

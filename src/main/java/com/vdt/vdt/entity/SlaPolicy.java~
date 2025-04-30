@@ -27,8 +27,8 @@ public class SlaPolicy {
 
     private CustomerAccountType customerGroup;
 
-    private long responseTimeTargetInMinutes;
-    private long resolutionTimeTargetInMinutes;
+    private Duration responseTimeTargetInMinutes;
+    private Duration resolutionTimeTargetInMinutes;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -58,21 +58,20 @@ public class SlaPolicy {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
-
-    public long getResponseTimeTargetInMinutes() {
-        return responseTimeTargetInMinutes;
-    }
-
-    public void setResponseTimeTargetInMinutes(long responseTimeTargetInMinutes) {
-        this.responseTimeTargetInMinutes = responseTimeTargetInMinutes;
-    }
-
-    public long getResolutionTimeTargetInMinutes() {
+    public Duration getResolutionTimeTargetInMinutes() {
         return resolutionTimeTargetInMinutes;
     }
 
-    public void setResolutionTimeTargetInMinutes(long resolutionTimeTargetInMinutes) {
+    public void setResolutionTimeTargetInMinutes(Duration resolutionTimeTargetInMinutes) {
         this.resolutionTimeTargetInMinutes = resolutionTimeTargetInMinutes;
+    }
+
+    public Duration getResponseTimeTargetInMinutes() {
+        return responseTimeTargetInMinutes;
+    }
+
+    public void setResponseTimeTargetInMinutes(Duration responseTimeTargetInMinutes) {
+        this.responseTimeTargetInMinutes = responseTimeTargetInMinutes;
     }
 
     public CustomerAccountType getCustomerGroup() {

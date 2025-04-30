@@ -1,11 +1,11 @@
 package com.vdt.vdt.service;
 
 import com.vdt.vdt.dto.CreateTicketRequest;
-import com.vdt.vdt.dto.TicketDashboardDto;
+import com.vdt.vdt.dto.CreateTicketResponse;
 import com.vdt.vdt.dto.TicketDetailDto;
-import com.vdt.vdt.dto.TicketsLADashboardData;
 import com.vdt.vdt.entity.*;
 import com.vdt.vdt.repository.SlaPolicyRepository;
+import com.vdt.vdt.repository.TicketCommentRepository;
 import com.vdt.vdt.repository.TicketRepository;
 import com.vdt.vdt.specification.TicketSpecification;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +25,8 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class TicketService {
+    @Autowired
+    private TicketCommentRepository ticketCommentRepository;
 
     @Autowired
     private TicketRepository ticketRepository;
@@ -44,13 +46,13 @@ public class TicketService {
     @Autowired
     private AsyncNotificationService asyncNotificationService;
 
-    public String createTicket(CreateTicketRequest request) {
+
+    public CreateTicketResponse createTicket(CreateTicketRequest request) {
         Customer customer = customerService.findById(request.getCustomerId());
-        Optional<User> assignedAgent = userService.findByEmail(request.getAssignedAgentEmail());
 
         Ticket ticket = ticketMapper.map(request, Ticket.class);
         ticket.setCustomer(customer);
-        assignedAgent.ifPresent(ticket::setAssignedAgent);
+
         ticket.setCreatedAt(LocalDateTime.now());
 
         SlaPolicy slaPolicy = slaPolicyRepository.findMatchingPolicy(
@@ -59,13 +61,21 @@ public class TicketService {
                 customer.getAccountType()
         ).orElseThrow(() -> new IllegalArgumentException("No SLA Policy found"));
 
-        ticket.setSlaResponseDueAt(ticket.getCreatedAt().plus(slaPolicy.getResponseTimeTarget()));
-        ticket.setSlaResolutionDueAt(ticket.getCreatedAt().plus(slaPolicy.getResolutionTimeTarget()));
+        ticket.setSlaResponseDueAt(
+                ticket.getCreatedAt().plus(Duration.ofMinutes(slaPolicy.getResponseTimeTargetInMinutes()))
+        );
+
+        ticket.setSlaResolutionDueAt(
+                ticket.getCreatedAt().plus(Duration.ofMinutes(slaPolicy.getResolutionTimeTargetInMinutes()))
+        );
         ticket.setStatus(TicketStatus.OPEN);
         Ticket savedTicket = ticketRepository.save(ticket);
-        asyncNotificationService.notifyAgent(ticket.getAssignedAgent(), savedTicket.getId());
-        return "Ticket created successfully";
+        CreateTicketResponse response = ticketMapper.map(savedTicket, CreateTicketResponse.class);
+        response.setCustomerEmail(customer.getEmail());
+        response.setCustomerName(customer.getName());
+        return response;
     }
+
 
     public String respondToTicket(Long ticketId, Long agentId, String response) {
         Ticket ticket = ticketRepository.findById(ticketId)
@@ -90,14 +100,16 @@ public class TicketService {
             ticket.setResponseSlaBreached(true);
         }
 
+        ticketRepository.save(ticket);
         TicketComment comment = new TicketComment();
         comment.setTicket(ticket);
         comment.setAuthorName(agent.getEmail());
         comment.setComment(response);
         comment.setTimestamp(LocalDateTime.now());
         ticket.getComments().add(comment);
+        comment.setTicketId(ticket.getId());
+        ticketCommentRepository.save(comment);
 
-        ticketRepository.save(ticket);
 
         return ticket.isResponseSlaBreached()
                 ? "Response recorded. SLA for response was breached."
@@ -115,11 +127,17 @@ public class TicketService {
 
         ticket.setAssignedAgent(assignedAgent.get());
         ticket.setStatus(TicketStatus.ASSIGNED);
+        ticket.setUpdatedAt(LocalDateTime.now());
         Ticket savedTicket = ticketRepository.save(ticket);
+        asyncNotificationService.notifyAgent(ticket.getAssignedAgent(), savedTicket.getId());
+        return "ticket has been assigned to " + savedTicket.getAssignedAgent().getEmail();
 
-        asyncNotificationService.notifyAgent(savedTicket.getAssignedAgent(), savedTicket.getId());
+    }
+    public String checkTicketStatus(Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
-        return "Ticket assigned successfully";
+        return String.format("Ticket ID %d is currently %s", ticketId, ticket.getStatus());
     }
 
     public String startWorkOnTicket(Long ticketId) {

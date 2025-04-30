@@ -3,14 +3,14 @@ package com.vdt.vdt.controller;
 import com.vdt.vdt.dto.SlaPolicyRequest;
 import com.vdt.vdt.dto.SlaPolicyResponse;
 import com.vdt.vdt.entity.SlaPolicy;
-import com.vdt.vdt.entity.Ticket;
 import com.vdt.vdt.service.SlaPolicyService;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/sla-policies")
@@ -24,11 +24,15 @@ public class SlaPolicyController {
     }
 
     @GetMapping
-    public List<SlaPolicyResponse> getAllPolicies() {
-        return slaPolicyService.getAllPolicies();
+    public Page<SlaPolicyResponse> getAllPolicies(Pageable pageable) {
+        return slaPolicyService.getAllPolicies(pageable);
+    }
+    @GetMapping("/get/{id}")
+    public SlaPolicyResponse getPolicyById(@PathVariable Long id) {
+        return slaPolicyService.getPolicyById(id);
     }
 
-    @PostMapping
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public SlaPolicyResponse createPolicy(@RequestBody SlaPolicyRequest request) {
         return slaPolicyService.createPolicy(request);
     }

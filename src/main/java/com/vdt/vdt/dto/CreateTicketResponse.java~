@@ -1,0 +1,107 @@
+package com.vdt.vdt.dto;
+
+import java.time.LocalDateTime;
+
+public class CreateTicketResponse {
+
+    private Long id;
+    private String ticketStatus;
+    private LocalDateTime createdAt;
+    private LocalDateTime slaResponseDueAt;
+    private LocalDateTime slaResolutionDueAt;
+    private String customerName;
+    private String customerEmail;
+    private String type;
+    private String priority;
+    private String ticketTitle;
+    private String description;
+
+    // Getters and Setters
+    public Long getTicketId() {
+        return ticketId;
+    }
+
+    public void setTicketId(Long ticketId) {
+        this.ticketId = ticketId;
+    }
+
+    public String getTicketStatus() {
+        return ticketStatus;
+    }
+
+    public void setTicketStatus(String ticketStatus) {
+        this.ticketStatus = ticketStatus;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getSlaResponseDueAt() {
+        return slaResponseDueAt;
+    }
+
+    public void setSlaResponseDueAt(LocalDateTime slaResponseDueAt) {
+        this.slaResponseDueAt = slaResponseDueAt;
+    }
+
+    public LocalDateTime getSlaResolutionDueAt() {
+        return slaResolutionDueAt;
+    }
+
+    public void setSlaResolutionDueAt(LocalDateTime slaResolutionDueAt) {
+        this.slaResolutionDueAt = slaResolutionDueAt;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public String getTicketType() {
+        return ticketType;
+    }
+
+    public void setTicketType(String ticketType) {
+        this.ticketType = ticketType;
+    }
+
+    public String getTicketPriority() {
+        return ticketPriority;
+    }
+
+    public void setTicketPriority(String ticketPriority) {
+        this.ticketPriority = ticketPriority;
+    }
+
+    public String getTicketTitle() {
+        return ticketTitle;
+    }
+
+    public void setTicketTitle(String ticketTitle) {
+        this.ticketTitle = ticketTitle;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+}

@@ -17,7 +17,8 @@ public interface SlaPolicyRepository extends JpaRepository<SlaPolicy, Long> {
 
     @Query("SELECT p FROM SlaPolicy p WHERE p.ticketType = :ticketType " +
             "AND p.priority = :priority " +
-            "AND p.customerGroup = :customerGroup " )
+            "AND p.customerGroup = :customerGroup " +
+            "AND p.active = true")
     Optional<SlaPolicy> findMatchingPolicy(
             @Param("ticketType") TicketType ticketType,
             @Param("priority") TicketPriority priority,

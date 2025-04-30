@@ -50,11 +50,10 @@ public class Seeder {
 
         // Ensure the platform admin user exists and is assigned the "platform_super_admin" role
         userRepository.findByEmail("opeoluwa007@gmail.com").orElseGet(() -> {
-//            User adminUser = new User();
-//            adminUser.setEmail("opeoluwa007@gmail.com");
-//            adminUser.setPassword(PasswordUtil.hashPassword("admin123")); // Default password
+            User adminUser = new User();
+            adminUser.setEmail("opeoluwa007@gmail.com");
+            adminUser.setPassword(PasswordUtil.hashPassword("admin123")); // Default password
 
-            User adminUser = new User("opeoluwa007@gmail.com", PasswordUtil.hashPassword("admin123"));
             // Save the adminUser first to generate its ID
             adminUser = userRepository.save(adminUser);
 
