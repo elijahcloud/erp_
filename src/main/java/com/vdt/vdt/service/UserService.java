@@ -99,17 +99,6 @@ public class UserService {
         userRepository.save(user);
     }
 
-
-    public UserService(UserRepository userRepository, TicketRepository ticketRepository,
-                        UserRoleRepository userRoleRepository, RoleRepository roleRepository,
-                        UserTenantRepository userTenantRepository, JwtUtil jwtUtil) {
-        this.userRepository = userRepository;
-        this.ticketRepository = ticketRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.roleRepository = roleRepository;
-        this.userTenantRepository = userTenantRepository;
-        this.jwtUtil = jwtUtil;
-    }
     @Transactional(readOnly = true)
     public User getManagerOfUserAssignedToATicket(Long ticketId) {
         return ticketRepository.findById(ticketId)
@@ -124,15 +113,11 @@ public class UserService {
         return crmSupervisor.map(UserRole::getUser).orElse(null);
     }
 
-
     public Optional<User> findByEmail(String userEmail) {
         return userRepository.findByEmail(userEmail);
     }
 
-
-
     public Optional<User> findByUser(User assignedAgent) {
-
         return userRepository.findById(String.valueOf(assignedAgent.getId()));
     }
 
