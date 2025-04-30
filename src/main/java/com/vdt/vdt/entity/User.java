@@ -12,7 +12,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @Data
-@NoArgsConstructor
+
 @AllArgsConstructor
 @Builder
 public class User {
@@ -118,6 +118,11 @@ public class User {
     public boolean isDeleted() {
         return this.deletedAt != null;
     }
+    public User(){}
+    public User(String email, String password){
+        this.email = email;
+        this.password = password;
+    }
 
     @Override
     public int hashCode() {
@@ -139,5 +144,81 @@ public class User {
                 ", email='" + email + '\'' +
                 // Avoid including lazy-loaded collections like roles
                 '}';
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+
+    public String getPassword() {
+        return password;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public List<User> getCreatedUsers() {
+        return createdUsers;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public User getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public List<User> getUpdatedUsers() {
+        return updatedUsers;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public List<User> getDeletedUsers() {
+        return deletedUsers;
+    }
+
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public Set<UserRole> getRoles() {
+        return roles;
+    }
+
+    public List<UserRole> getUserRoles() {
+        return userRoles;
+    }
+
+    public UserRole getActiveRole() {
+        return activeRole;
+    }
+
+    public List<UserTenant> getUserTenants() {
+        return userTenants;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public List<Customer> getCustomer() {
+        return customer;
     }
 }

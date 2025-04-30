@@ -13,10 +13,14 @@ import org.springframework.http.HttpStatus;
 
 @RestController
 @RequestMapping("/api/roles") // Updated route to conform with AuthController
-@RequiredArgsConstructor
+
 public class RoleController {
 
     private final RoleService roleService;
+
+    private RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @GetMapping
     public ResponseEntity<?> getAllRoles(@RequestHeader(value = "Authorization", required = true) String authorizationHeader) {

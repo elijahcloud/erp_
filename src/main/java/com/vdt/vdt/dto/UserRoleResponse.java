@@ -8,5 +8,48 @@ public class UserRoleResponse {
     private String role;
     private String tenantId;
     private String tenantName;
+
+    public Boolean getIsPlatformAdmin() {
+        return isPlatformAdmin;
+    }
+
+    public void setIsPlatformAdmin(Boolean platformAdmin) {
+        isPlatformAdmin = platformAdmin;
+    }
+
     private Boolean isPlatformAdmin;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getTenantId() {
+        return tenantId;
+    }
+
+    public void setTenantId(String tenantId) {
+        this.tenantId = tenantId;
+    }
+
+    public String getTenantName() {
+        return tenantName;
+    }
+
+    public void setTenantName(String tenantName) {
+        this.tenantName = tenantName;
+    }
+
+
 }

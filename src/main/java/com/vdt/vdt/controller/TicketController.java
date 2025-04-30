@@ -1,6 +1,7 @@
 package com.vdt.vdt.controller;
 
 import com.vdt.vdt.dto.CreateTicketRequest;
+import com.vdt.vdt.dto.CreateTicketResponse;
 import com.vdt.vdt.dto.TicketDetailDto;
 import com.vdt.vdt.entity.Ticket;
 import com.vdt.vdt.entity.TicketPriority;
@@ -16,14 +17,17 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tickets")
-@RequiredArgsConstructor
 public class TicketController {
 
     private final TicketService ticketService;
 
+    private TicketController(TicketService ticketService) {
+        this.ticketService = ticketService;
+    }
+
     @PostMapping
-    public ResponseEntity<String> createTicket(@RequestBody CreateTicketRequest request) {
-        String ticketResponse = ticketService.createTicket(request);
+    public ResponseEntity<CreateTicketResponse> createTicket(@RequestBody CreateTicketRequest request) {
+        CreateTicketResponse ticketResponse = ticketService.createTicket(request);
         return ResponseEntity.ok(ticketResponse);
     }
 
@@ -32,8 +36,11 @@ public class TicketController {
         String updateMessage = ticketService.updateStatus(id, status);
         return ResponseEntity.ok(updateMessage);
     }
-
-    @PostMapping("/{id}/comment")
+    @GetMapping("/status/{ticketId}")
+    public String checkTicketStatus(@PathVariable Long ticketId) {
+        return ticketService.checkTicketStatus(ticketId);
+    }
+    @PostMapping("add-comment/{id}/")
     public ResponseEntity<Void> addComment(@PathVariable Long id, @RequestParam String authorName, @RequestBody String comment) {
         ticketService.addComment(id, comment, authorName);
         return ResponseEntity.ok().build();
@@ -68,5 +75,62 @@ public class TicketController {
     public ResponseEntity<Map<String, Object>> getDashboardStats() {
         Map<String, Object> stats = ticketService.getDashboardStats();
         return ResponseEntity.ok(stats);
+    }
+
+    @PostMapping("/{ticketId}/respond")
+    public ResponseEntity<String> respondToTicket(
+            @PathVariable Long ticketId,
+            @RequestParam Long agentId,
+            @RequestBody String responseText) {
+        String result = ticketService.respondToTicket(ticketId, agentId, responseText);
+        return ResponseEntity.ok(result);
+    }
+    @PostMapping("/{ticketId}/pause-sla")
+    public String pauseSlaTimer(@PathVariable Long ticketId, @RequestParam String reason) {
+        ticketService.pauseSlaTimer(ticketId, reason);
+        return "SLA timer paused successfully";
+    }
+
+    @PostMapping("/{ticketId}/resume-sla")
+    public String resumeSlaTimer(@PathVariable Long ticketId) {
+        ticketService.resumeSlaTimer(ticketId);
+        return "SLA timer resumed successfully";
+    }
+
+    @GetMapping("/{ticketId}/sla-status")
+    public String getSlaBreachStatus(@PathVariable Long ticketId) {
+        return ticketService.getSlaBreachStatus(ticketId);
+    }
+    @PostMapping("/{ticketId}/assign")
+    public ResponseEntity<String> assignTicket(@PathVariable Long ticketId,
+                                               @RequestParam String agentEmail) {
+        try {
+            String response = ticketService.assignTicket(ticketId, agentEmail);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{ticketId}/start-work")
+    public ResponseEntity<String> startWorkOnTicket(@PathVariable Long ticketId) {
+        try {
+            String response = ticketService.startWorkOnTicket(ticketId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+
+
+    @PostMapping("/{ticketId}/complete")
+    public ResponseEntity<String> completeTicket(@PathVariable Long ticketId) {
+        try {
+            String response = ticketService.completeTicket(ticketId);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException | IllegalStateException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
     }
 }

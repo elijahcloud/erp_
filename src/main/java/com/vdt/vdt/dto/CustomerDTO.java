@@ -41,4 +41,68 @@ public class CustomerDTO {
         System.out.println("Converted CustomerDTO: " + customerDTO);
         return customerDTO;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getUserAgentId() {
+        return userAgentId;
+    }
+
+    public void setUserAgentId(Long userAgentId) {
+        this.userAgentId = userAgentId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
+    public String getCustomerTier() {
+        return customerTier;
+    }
+
+    public void setCustomerTier(String customerTier) {
+        this.customerTier = customerTier;
+    }
+
+    public String getAccountNumber() {
+        return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 }

@@ -9,6 +9,7 @@ import com.vdt.vdt.repository.RolePermissionRepository;
 import com.vdt.vdt.util.JwtUtil;
 import com.vdt.vdt.entity.User; 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,13 +22,19 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class RoleService {
 
     private final RoleRepository roleRepository;
     private final RolePermissionRepository rolePermissionRepository; // Add RolePermissionRepository
     private final JwtUtil jwtUtil;
+    private final ModelMapper modelMapper;
 
+    private RoleService(RoleRepository roleRepository, RolePermissionRepository rolePermissionRepository, JwtUtil jwtUtil, ModelMapper modelMapper) {
+        this.roleRepository = roleRepository;
+        this.rolePermissionRepository = rolePermissionRepository;
+        this.jwtUtil = jwtUtil;
+        this.modelMapper = modelMapper;
+    }
     public ResponseEntity<?> getAllRoles(String authorizationHeader) {
         try {
             System.out.println("Fetching all roles with authorization header: " + authorizationHeader);
@@ -213,14 +220,17 @@ public class RoleService {
 
 
     private RoleDto mapToDto(Role role) {
-        Long userCount = roleRepository.countUsersByRoleId(role.getId()); // Fetch user count
-        return RoleDto.builder()
-                .id(role.getId())
-                .name(role.getName())
-                .description(role.getDescription())
-                .type(role.getType())
-                .userCount(userCount.intValue()) // Set user count
-                .createdAt(role.getCreatedAt())
-                .build();
+        Long userCount = roleRepository.countUsersByRoleId(role.getId());
+
+        return modelMapper.map(role, RoleDto.class);
+//        return RoleDto.builder()
+//                .id(role.getId())
+//                .name(role.getName())
+//                .description(role.getDescription())
+//                .type(role.getType())
+//                .userCount(userCount.intValue()) // Set user count
+//                .createdAt(role.getCreatedAt())
+//                .build();
     }
+
 }
