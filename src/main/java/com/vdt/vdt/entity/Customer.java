@@ -1,6 +1,7 @@
 package com.vdt.vdt.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.vdt.vdt.customercelebration.CustomerCelebration;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -81,8 +82,6 @@ public class Customer {
     @JoinColumn(name = "customer_deleted_by", insertable = false, updatable = false)
     private User deletedByUser;
 
-
-
     @OneToOne(mappedBy = "customer")
     private KYC customerKYC;
 
@@ -93,4 +92,7 @@ public class Customer {
     @ManyToOne
     @JoinColumn(name = "customer_tenant_id", referencedColumnName = "tenant_id")
     private Tenant tenant;
+
+    @OneToMany(mappedBy = "customer")
+    List<CustomerCelebration> customerCelebration;
 }

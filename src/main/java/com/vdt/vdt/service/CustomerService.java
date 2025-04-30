@@ -63,7 +63,7 @@ public class CustomerService {
         } else {
             String errorMessage = "User Agent with ID " + customerDTO.getUserAgentId() + " not found.";
             System.out.println(errorMessage);
-            throw new UsernameNotFoundException(errorMessage);
+            throw new EntityNotFoundException(errorMessage);
         }
 
         Customer savedCustomer = customerRepository.save(customer);
