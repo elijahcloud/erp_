@@ -1,0 +1,4 @@
+package com.vdt.vdt.dto;
+
+public class TicketStatisticsDto {
+}

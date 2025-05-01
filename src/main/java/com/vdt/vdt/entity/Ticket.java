@@ -27,7 +27,7 @@ public class Ticket {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "ticket_type")
-    private TicketType type;
+    private TicketType ticketType;
 
     @Column(name = "ticket_description")
     private String description;
@@ -118,6 +118,17 @@ public class Ticket {
 
     private long responseTimeMinutes;
     private long resolutionTimeMinutes;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ticket_sla_status")
+    private TicketSlaStatus ticketSlaStatus;
+
+    public TicketSlaStatus getTicketSlaStatus() {
+        return ticketSlaStatus;
+    }
+
+    public void setTicketSlaStatus(TicketSlaStatus ticketSlaStatus) {
+        this.ticketSlaStatus = ticketSlaStatus;
+    }
 
     public Long getId() {
         return id;
@@ -143,12 +154,12 @@ public class Ticket {
         this.ticketTitle = ticketTitle;
     }
 
-    public TicketType getType() {
-        return type;
+    public TicketType getTicketType() {
+        return ticketType;
     }
 
-    public void setType(TicketType type) {
-        this.type = type;
+    public void setTicketType(TicketType ticketType) {
+        this.ticketType = ticketType;
     }
 
     public String getDescription() {

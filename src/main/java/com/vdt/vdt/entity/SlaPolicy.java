@@ -35,6 +35,17 @@ public class SlaPolicy {
 
     private Integer reassignThresholdHours;
 
+    @Column(nullable = false)
+    private boolean deleted = false;
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     public Integer getReassignThresholdHours() {
         return reassignThresholdHours;
     }

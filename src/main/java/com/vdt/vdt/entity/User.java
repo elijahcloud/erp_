@@ -85,9 +85,15 @@ public class User {
     @OneToMany(mappedBy = "agent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Customer> customer;
 
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
+
     public User(String id) {
         this.id = Long.parseLong(id);
     }
+
+
 
     @PrePersist
     public void prePersist() {

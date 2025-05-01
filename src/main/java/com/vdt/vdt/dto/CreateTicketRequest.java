@@ -1,14 +1,25 @@
 package com.vdt.vdt.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateTicketRequest {
     private String ticketTitle;
     private String type;
     private String description;
     private String priority;
     private Long customerId;
+    private String agentEmail;
+
+    public String getAgentEmail() {
+        return agentEmail;
+    }
+
+    public void setAgentEmail(String agentEmail) {
+        this.agentEmail = agentEmail;
+    }
 
     public String getTicketTitle() {
         return ticketTitle;

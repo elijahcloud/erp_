@@ -59,6 +59,18 @@ public class SlaComplianceService {
         return breachesPerAgent;
     }
 
+    public Map<String, Long> getSlaBreachesPerDepartment() {
+        List<Ticket[]> result = ticketRepository.countSlaBreachesPerDepartment();
+        Map<String, Long> breachesPerDepartment = new HashMap<>();
+        for (Object[] row : result) {
+            String departmentName = (String) row[0];
+            Long breachCount = (Long) row[1];
+            breachesPerDepartment.put(departmentName, breachCount);
+        }
+        return breachesPerDepartment;
+    }
+
+
     public Map<String, Double> getSlaPerformanceByTicketType() {
         List<Object[]> result = ticketRepository.countSlaComplianceByTicketType();
         Map<String, Double> slaPerformance = new HashMap<>();
@@ -79,6 +91,7 @@ public class SlaComplianceService {
         }
         return topViolators;
     }
+
 
 //    public SlaPolicy getSlaForCustomerGroupAndTicketType(CustomerAccountType group, TicketType type) {
 //        return slaPolicyRepository.findByCustomerGroupAndTicketType(group, type)

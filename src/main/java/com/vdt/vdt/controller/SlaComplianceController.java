@@ -32,6 +32,12 @@ public class SlaComplianceController {
         return slaComplianceService.getSlaBreachesPerAgent();
     }
 
+    @GetMapping("/breaches-per-department")
+    public Map<String, Long> getSlaBreachesPerDepartment() {
+        return slaComplianceService.getSlaBreachesPerDepartment();
+    }
+
+
     @GetMapping("/performance-by-ticket-type")
     public Map<String, Double> getSlaPerformanceByTicketType() {
         return slaComplianceService.getSlaPerformanceByTicketType();

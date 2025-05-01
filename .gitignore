@@ -38,5 +38,4 @@ build/
 *.war
 *.log
 
-.src/main/resources/db.migration
-pom.xml
+src/main/resources/application-dev.yml

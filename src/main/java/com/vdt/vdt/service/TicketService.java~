@@ -105,9 +105,8 @@ public class TicketService {
         LocalDateTime now = LocalDateTime.now();
         ticket.setFirstResponseAt(now);
         ticket.setLastActionAt(now);
-        ticket.setResponseTimeMinutes(
-                Duration.between(ticket.getCreatedAt().toInstant(ZoneOffset.UTC), Instant.now()).toMinutes()
-        );
+        ticket.setResponseTimeMinutes(Duration.between(ticket.getCreatedAt(), now).toMinutes());
+
         if (ticket.getSlaResponseDueAt() != null && now.isAfter(ticket.getSlaResponseDueAt())) {
             ticket.setResponseSlaBreached(true);
         }

@@ -54,6 +54,30 @@ public class AsyncNotificationService {
 
 
     @Async
+    public void alertCrmSupervisor(Long ticketId) {
+        try {
+            Ticket ticket = ticketRepository.findById(ticketId)
+                    .orElseThrow(() -> new EntityNotFoundException("Ticket not found with ID: " + ticketId));
+
+            User crmSupervisor = userService.getCrmSupervisor();
+
+            if (crmSupervisor != null) {
+                notificationService.sendNotification(
+                        crmSupervisor.getEmail(),
+                        "Critical Ticket SLA Breach",
+                        "Critical Ticket ID " + ticket.getId() + " has breached SLA. Immediate action required."
+                );
+                log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", crmSupervisor.getEmail(), ticketId);
+            } else {
+                log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
+            }
+        } catch (Exception ex) {
+            log.error("Error while alerting CRM Supervisor for critical ticket [{}]: {}", ticketId, ex.getMessage(), ex);
+        }
+    }
+
+
+    @Async
     public void notifyUser(String email, String message, long ticketId) {
         notificationService.sendNotification(
                 email,
@@ -77,28 +101,6 @@ public class AsyncNotificationService {
                         "Critical Ticket ID " + ticket.getId() + " has breached SLA. Immediate action required."
                 );
                 log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", agent.get().getEmail(), ticketId);
-            } else {
-                log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
-            }
-        } catch (Exception ex) {
-            log.error("Error while alerting CRM Supervisor for critical ticket [{}]: {}", ticketId, ex.getMessage(), ex);
-        }
-    }
-
-    public void notifyCrmSupervisor(Long ticketId) {
-        try {
-            Ticket ticket = ticketRepository.findById(ticketId)
-                    .orElseThrow(() -> new EntityNotFoundException("Ticket not found with ID: " + ticketId));
-
-            User crmSupervisor = userService.getCrmSupervisor();
-
-            if (crmSupervisor != null) {
-                notificationService.sendNotification(
-                        crmSupervisor.getEmail(),
-                        "Critical Ticket SLA Breach",
-                        "Critical Ticket ID " + ticket.getId() + " has breached SLA. Immediate action required."
-                );
-                log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", crmSupervisor.getEmail(), ticketId);
             } else {
                 log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
             }

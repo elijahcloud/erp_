@@ -207,7 +207,7 @@ public class SlaPolicyService {
         if (ticket.getCreatedAt() == null || ticket.getResolvedAt() == null || ticket.getSlaResolutionDueAt() == null) {
             return false;
         }
-
+        
         return !ticket.getResolvedAt().isAfter(ticket.getSlaResolutionDueAt());
     }
 

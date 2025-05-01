@@ -17,7 +17,7 @@ import java.io.InputStream;
 
 
 @RestController
-@RequestMapping("/reports")
+@RequestMapping("/api/reports")
 public class SlaComplianceReportController {
 
     private final SlaComplianceExportService exportService;

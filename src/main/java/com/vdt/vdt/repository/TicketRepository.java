@@ -18,8 +18,8 @@ import java.util.List;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpecificationExecutor<Ticket> {
 
+    Page<Ticket> findByCustomerId(Long customerId, Pageable pageable);
     List<Ticket> findByCustomerId(Long customerId);
-
     @Query("SELECT t FROM Ticket t WHERE " +
             "(t.customer.id = :customerId OR :customerId IS NULL) " +
             "AND (t.id = :ticketId OR :ticketId IS NULL) " +
@@ -51,7 +51,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
     List<Object[]> countSlaBreachesPerAgent();
 
 
-    @Query("SELECT t.type, COUNT(t), SUM(CASE WHEN t.resolutionSlaBreached = false THEN 1 ELSE 0 END) FROM Ticket t GROUP BY t.type")
+    @Query("SELECT t.ticketType, COUNT(t), SUM(CASE WHEN t.resolutionSlaBreached = false THEN 1 ELSE 0 END) FROM Ticket t GROUP BY t.ticketType")
     List<Object[]> countSlaComplianceByTicketType();
 
 
@@ -62,7 +62,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
     SELECT 
         t.id,
         t.ticketTitle,
-        t.type,
+        t.ticketType,
         t.priority,
         t.status,
         t.createdAt,
@@ -81,4 +81,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
     @Query("SELECT t FROM Ticket t WHERE t.slaResolutionDueAt IS NOT NULL AND t.slaResolutionDueAt BETWEEN :startTime AND :endTime")
     List<Ticket> findTicketsNearSlaBreach(@Param("startTime") LocalDateTime startTime, @Param("endTime") LocalDateTime endTime);
 
+    @Query("SELECT t.assignedDepartment.name, COUNT(t) FROM Ticket t WHERE t.ticketSlaStatus = 'BREACHED' GROUP BY t.assignedDepartment.name")
+    List<Ticket[]> countSlaBreachesPerDepartment();
 }
