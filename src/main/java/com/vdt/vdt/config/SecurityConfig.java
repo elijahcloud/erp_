@@ -23,7 +23,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource)) // ✅ CORRECT CORS INTEGRATION
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/**").permitAll() // allow login/register
+                .requestMatchers("/api/**","/actuator/health","/h").permitAll() // allow login/register
                 .anyRequest().authenticated()
             );
         return http.build();
