@@ -102,6 +102,17 @@ public class JwtUtil {
                 .getBody();
     }
 
+    public Long extractUserId(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            return Long.valueOf(claims.getSubject()); // Assuming the user ID is stored as the subject
+        } catch (Exception e) {
+            System.out.println("Failed to extract user ID from token: " + e.getMessage());
+            return null;
+        }
+    }
+
+
     public boolean validateToken(String token) {
         try {
             System.out.println("Validating token: " + token);

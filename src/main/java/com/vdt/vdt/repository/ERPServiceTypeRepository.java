@@ -1,4 +1,4 @@
-package com.vdt.vdt.service;
+package com.vdt.vdt.repository;
 
 
 import com.vdt.vdt.entity.ERPServiceType;

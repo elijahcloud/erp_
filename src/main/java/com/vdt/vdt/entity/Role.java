@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
@@ -41,8 +42,24 @@ public class Role {
     @JoinColumn(name = "role_updated_by")
     private User updatedBy;
 
+
+    @Column(name = "role_deleted_at")
+    private LocalDateTime deletedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_deleted_by")
+    private User deletedBy;
+
+    @Column(name = "is_deleted")
+    @Builder.Default
+    private Boolean isDeleted = false;
+
+
     @Transient
     private Long userCount; // Not persisted, dynamically fetched
+
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RolePermission> rolePermissions; // Relationship with RolePermission
 
     // Getters and Setters
     public Long getId() {
@@ -111,6 +128,14 @@ public class Role {
 
     public void setUserCount(Long userCount) {
         this.userCount = userCount;
+    }
+
+    public List<RolePermission> getRolePermissions() {
+        return rolePermissions;
+    }
+
+    public void setRolePermissions(List<RolePermission> rolePermissions) {
+        this.rolePermissions = rolePermissions;
     }
 
     public String getType() {

@@ -14,6 +14,109 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @Builder
 public class Tenant {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public Boolean getLandlord() {
+        return isLandlord;
+    }
+
+    public void setLandlord(Boolean landlord) {
+        isLandlord = landlord;
+    }
+
+    public Boolean getActive() {
+        return isActive;
+    }
+
+    public void setActive(Boolean active) {
+        isActive = active;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public User getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(User createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public User getUpdatedBy() {
+        return updatedBy;
+    }
+
+    public void setUpdatedBy(User updatedBy) {
+        this.updatedBy = updatedBy;
+    }
+
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
+    }
+
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
+    }
+
+    public User getDeletedBy() {
+        return deletedBy;
+    }
+
+    public void setDeletedBy(User deletedBy) {
+        this.deletedBy = deletedBy;
+    }
+
+    public List<UserTenant> getUserTenants() {
+        return userTenants;
+    }
+
+    public void setUserTenants(List<UserTenant> userTenants) {
+        this.userTenants = userTenants;
+    }
+
+    public List<TenantDomain> getTenantDomains() {
+        return tenantDomains;
+    }
+
+    public void setTenantDomains(List<TenantDomain> tenantDomains) {
+        this.tenantDomains = tenantDomains;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,6 +175,76 @@ public class Tenant {
     @JsonIgnore
     private List<TenantDomain> tenantDomains;
 
+    @Basic
+    @Column(name = "tenant_address") // Correct column name
+    private String address;
+
+    @Basic
+    @Column(name = "tenant_logo", length = 255)
+    private String logo;
+
+    private String alias;
+    private String phoneNumber;
+    private String description;
+    private Long sectorId;
+    private Long subSectorId;
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getLogo() {
+        return logo;
+    }
+
+    public void setLogo(String logo) {
+        this.logo = logo;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Long getSectorId() {
+        return sectorId;
+    }
+
+    public void setSectorId(Long sectorId) {
+        this.sectorId = sectorId;
+    }
+
+    public Long getSubSectorId() {
+        return subSectorId;
+    }
+
+    public void setSubSectorId(Long subSectorId) {
+        this.subSectorId = subSectorId;
+    }
+
     @ToString.Exclude
     @JsonIgnore
     @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -119,5 +292,9 @@ public class Tenant {
         userTenant.setIsPrimary(isPrimary); // Set primary flag
         userTenant.setCreatedAt(LocalDateTime.now()); // Set createdAt timestamp
         this.userTenants.add(userTenant);
+    }
+
+    public Tenant(Long id) {
+        this.id = id;
     }
 }

@@ -24,7 +24,7 @@ public class TenantDomain {
     private Tenant tenant;
 
     @Column(name = "tenant_domain_name", nullable = false, unique = true, length = 255)
-    private String name;
+    private String domainName;
 
     @Column(name = "tenant_domain_is_primary", nullable = false)
     private Boolean isPrimary;

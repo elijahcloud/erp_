@@ -1,0 +1,96 @@
+package com.vdt.vdt.service;
+
+
+
+import com.vdt.vdt.entity.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+
+
+@Component
+public class TicketSlaEvaluator {
+
+    private final AsyncNotificationService notificationService;
+
+    private static final Logger log = LoggerFactory.getLogger(TicketSlaEvaluator.class);
+
+    public TicketSlaEvaluator(AsyncNotificationService notificationService) {
+        this.notificationService = notificationService;
+    }
+
+    public boolean evaluate(Ticket ticket) {
+
+
+        boolean changed = false;
+        LocalDateTime now = LocalDateTime.now();
+
+        changed |= checkResponseSla(ticket,  now);
+        changed |= checkResolutionAtRisk(ticket, now);
+        changed |= checkResolutionBreached(ticket, now);
+        notifyCrmIfCritical(ticket, now);
+
+        return changed;
+    }
+
+    private boolean checkResponseSla(Ticket ticket,  LocalDateTime now) {
+        if (ticket.getFirstResponseAt() != null || ticket.getAssignedAgent() == null) return false;
+
+        if (ticket.getSlaResponseDueAt() != null && now.isAfter(ticket.getSlaResponseDueAt())) {
+            ticket.setResponseSlaBreached(true);
+            notificationService.notifyAgent(ticket.getAssignedAgent(), ticket.getId());
+            notificationService.notifyManager(ticket.getAssignedAgent(), ticket.getId());
+            log.info("Ticket [{}] missed response SLA.", ticket.getId());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkResolutionAtRisk(Ticket ticket, LocalDateTime now) {
+        if (ticket.getFirstResponseAt() == null || ticket.getSlaResolutionDueAt() == null) return false;
+        if (!TicketStatus.IN_PROGRESS.equals(ticket.getStatus())) return false;
+
+        Duration remaining = Duration.between(now, ticket.getSlaResolutionDueAt());
+        if (!remaining.isNegative() && remaining.toMinutes() <= 60) {
+            ticket.setTicketSlaStatus(TicketSlaStatus.AT_RISK);
+            notificationService.notifyAgent(ticket.getAssignedAgent(), ticket.getId());
+            notificationService.notifyManager(ticket.getAssignedAgent(), ticket.getId());
+            log.info("Ticket [{}] is at risk.", ticket.getId());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkResolutionBreached(Ticket ticket, LocalDateTime now) {
+        if (ticket.getSlaResolutionDueAt() == null || now.isBefore(ticket.getSlaResolutionDueAt())) return false;
+        if (TicketSlaStatus.BREACHED.equals(ticket.getTicketSlaStatus())) return false;
+
+        ticket.setTicketSlaStatus(TicketSlaStatus.BREACHED);
+        ticket.setResolutionSlaBreached(true);
+        ticket.setStatus(TicketStatus.ESCALATED);
+        notificationService.notifyManager(ticket.getAssignedAgent(), ticket.getId());
+        notificationService.notifyAgent(ticket.getAssignedAgent(), ticket.getId());
+        log.info("Ticket [{}] resolution SLA breached.", ticket.getId());
+        return true;
+    }
+
+    private void notifyCrmIfCritical(Ticket ticket, LocalDateTime now) {
+        if (ticket.getPriority() != TicketPriority.CRITICAL) {
+            return;
+        }
+
+        boolean isResponseSlaBreached = ticket.getSlaResponseDueAt() != null && now.isAfter(ticket.getSlaResponseDueAt());
+        boolean isResolutionSlaBreached = ticket.getSlaResolutionDueAt() != null && now.isAfter(ticket.getSlaResolutionDueAt());
+
+        if (isResponseSlaBreached || isResolutionSlaBreached) {
+            notificationService.notifyCrmSupervisor(ticket.getId());
+            log.info("Critical priority ticket [{}] exceeded SLA. CRM Supervisor alerted.", ticket.getId());
+        }
+    }
+
+    }
+
+

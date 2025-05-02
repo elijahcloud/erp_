@@ -18,6 +18,14 @@ public class UserRole {
     @Column(name = "user_role_id")
     private Long id;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_role_user_id", nullable = false)
     private User user;

@@ -16,11 +16,11 @@ public class RolePermission {
     @Column(name = "role_permission_id")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_permission_role_id", nullable = false)
     private Role role;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_permission_permission_id", nullable = false)
     private Permission permission;
 }
