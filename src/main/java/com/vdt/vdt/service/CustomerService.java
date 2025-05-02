@@ -5,6 +5,7 @@ import com.vdt.vdt.entity.*;
 import com.vdt.vdt.dto.CustomerDTO;
 import com.vdt.vdt.repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ public class CustomerService {
     @Autowired
     TenantRepository tenantRepository;
 
+    @Transactional
     public CustomerDTO addNewCustomer(CustomerRequestDTO customerDTO) {
         System.out.println("Starting addNewCustomer with CustomerDTO: " + customerDTO);
 

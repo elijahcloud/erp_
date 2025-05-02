@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,7 +24,8 @@ public class SlaPolicy {
     @Enumerated(EnumType.STRING)
     private TicketPriority priority;
 
-    private CustomerAccountType customerGroup;
+    @Enumerated(EnumType.STRING)
+    private CustomerAccountType customerAccountType;
 
     private long responseTimeTargetInMinutes;
     private long resolutionTimeTargetInMinutes;
@@ -86,12 +86,12 @@ public class SlaPolicy {
         this.resolutionTimeTargetInMinutes = resolutionTimeTargetInMinutes;
     }
 
-    public CustomerAccountType getCustomerGroup() {
-        return customerGroup;
+    public CustomerAccountType getCustomerAccountType() {
+        return customerAccountType;
     }
 
-    public void setCustomerGroup(CustomerAccountType customerGroup) {
-        this.customerGroup = customerGroup;
+    public void setCustomerAccountType(CustomerAccountType customerAccountType) {
+        this.customerAccountType = customerAccountType;
     }
 
     public TicketPriority getPriority() {

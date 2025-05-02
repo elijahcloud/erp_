@@ -76,7 +76,7 @@ public class Ticket {
     @Column(name = "ticket_created_by")
     private Long createdBy;
 
-    @Column(name = "ticket_updated_at")
+    @Column(name = "ticket_updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
     @Column(name = "ticket_updated_by")

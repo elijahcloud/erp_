@@ -2,6 +2,12 @@ package com.vdt.vdt.controller;
 
 import com.vdt.vdt.dto.*;
 import com.vdt.vdt.service.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.vdt.vdt.util.JwtUtil; // Import the JwtUtil class
 import org.springframework.http.HttpStatus;
@@ -15,6 +21,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name = "Authentication", description = "Endpoints for authentication-related operations")
 @Validated
 public class AuthController {
 
@@ -23,6 +30,11 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil; // Add JwtUtil as a dependency
 
+    @Operation(summary = "Login", description = "Authenticate the user and return a JWT token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login successful"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest, @RequestHeader(value = "Authorization", required = true) String authorizationHeader) {
         try {
@@ -32,6 +44,11 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Logout", description = "Logs out the user and invalidates the JWT token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Logout successful"),
+        @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     @PostMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) {
         try {
@@ -41,6 +58,11 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Forgot Password", description = "Sends an email to reset the user's password.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Email sent successfully"),
+        @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(
         @Valid @RequestBody ForgotPasswordRequest forgotPasswordRequest,
@@ -53,6 +75,11 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Reset Password", description = "Resets the user's password based on the token provided.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Password reset successful"),
+        @ApiResponse(responseCode = "400", description = "Bad request")
+    })
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest) {
         try {
@@ -63,6 +90,11 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Switch Role", description = "Switches the user's current role.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Role switched successfully"),
+        @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
     @PostMapping("/switch-role")
     public ResponseEntity<?> switchRole(@Valid @RequestBody SwitchRoleRequest switchRoleRequest) {
         try {
@@ -72,6 +104,12 @@ public class AuthController {
         }
     }
 
+    @Operation(summary = "Get Pre-login Token", description = "Generates a temporary pre-login token.")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Token generated successfully",
+            content = @Content(mediaType = "application/json", schema = @Schema(implementation = TokenResponse.class))),
+        @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
     @GetMapping("/pre-login-token")
     public ResponseEntity<?> getPreLoginToken() {
         try {

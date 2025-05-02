@@ -79,6 +79,7 @@ public class TicketService {
                 ticket.getCreatedAt().plus(Duration.ofMinutes(slaPolicy.getResolutionTimeTargetInMinutes()))
         );
         ticket.setStatus(TicketStatus.OPEN);
+        ticket.setUpdatedAt(LocalDateTime.now());
         Ticket savedTicket = ticketRepository.save(ticket);
         CreateTicketResponse response = ticketMapper.map(savedTicket, CreateTicketResponse.class);
         response.setCustomerEmail(customer.getEmail());

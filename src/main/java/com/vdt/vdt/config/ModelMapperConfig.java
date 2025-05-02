@@ -32,9 +32,9 @@ public class ModelMapperConfig {
             }, SlaPolicy::setPriority);
 
             mapper.map(src -> {
-                String customerGroup = src.getCustomerGroup();
+                String customerGroup = src.getCustomerAccountType();
                 return customerGroup != null ? CustomerAccountType.valueOf(customerGroup.toUpperCase()) : null;
-            }, SlaPolicy::setCustomerGroup);
+            }, SlaPolicy::setCustomerAccountType);
         });
 
         modelMapper.typeMap(Ticket.class, TicketDetailDto.class).addMappings(mapper -> {

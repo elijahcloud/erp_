@@ -8,7 +8,7 @@ public class SlaPolicyRequest {
 
     private String ticketType;
     private String priority;
-    private String customerGroup;
+    private String customerAccountType;
     private long responseTimeTargetInMinutes;
     private long resolutionTimeTargetInMinutes;
     private Integer reassignThresholdHours;
@@ -55,12 +55,12 @@ public class SlaPolicyRequest {
 
 
 
-    public String getCustomerGroup() {
-        return customerGroup;
+    public String getCustomerAccountType() {
+        return customerAccountType;
     }
 
-    public void setCustomerGroup(String customerGroup) {
-        this.customerGroup = customerGroup;
+    public void setCustomerAccountType(String customerAccountType) {
+        this.customerAccountType = customerAccountType;
     }
 
 

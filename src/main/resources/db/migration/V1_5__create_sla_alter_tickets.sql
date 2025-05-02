@@ -5,7 +5,7 @@ CREATE TABLE sla_policies
     id                       BIGINT AUTO_INCREMENT NOT NULL,
     ticket_type              VARCHAR(255)          NULL,
     priority                 VARCHAR(255)          NULL,
-    customer_group           SMALLINT              NULL,
+    customer_group           VARCHAR(255)          NULL,
     response_time_target     BIGINT                NULL,
     resolution_time_target   BIGINT                NULL,
     created_at               datetime              NULL,

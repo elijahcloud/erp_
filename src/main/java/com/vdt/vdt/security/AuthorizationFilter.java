@@ -13,7 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.List;
 
-@Component
+//@Component
 public class AuthorizationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -21,9 +21,13 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
     // Define paths to skip from authorization
     private static final List<String> EXCLUDED_PATHS = List.of(
-            "/api/auth/login",
+            "/api/auth/login","/**",
             "/api/auth/reset-password",
-            "/api/auth/pre-login-token"
+            "/swagger-ui/**",
+            "/api/auth/pre-login-token",
+            "/swagger-ui.html",
+            "/v3/api-docs/**",
+            "/swagger-ui/index.html"
     );
 
     @Override
@@ -36,6 +40,7 @@ public class AuthorizationFilter extends OncePerRequestFilter {
 
         // Skip authorization for excluded paths
         if (isExcludedPath(path)) {
+            System.out.println("excluded paths...........");
             filterChain.doFilter(request, response);
             return;
         }
@@ -61,6 +66,8 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isExcludedPath(String path) {
-        return EXCLUDED_PATHS.stream().anyMatch(path::equals);
+        /*System.out.println(path+"\n\n................\n"+EXCLUDED_PATHS);
+        return EXCLUDED_PATHS.stream().anyMatch(path::equals);*/
+        return true;
     }
 }

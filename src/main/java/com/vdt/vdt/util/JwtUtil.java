@@ -41,7 +41,7 @@ public class JwtUtil {
         this.SIGNING_KEY = new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS512.getJcaName());
     }
 
-    private final long EXPIRATION_TIME = 30 * 60 * 1000; // 30 minutes
+    private final long EXPIRATION_TIME = 30*2 * 60 * 1000; // 60 minutes(1hr)
     private final Set<String> tokenBlacklist = new HashSet<>();
 
     public String generateToken(User user) {

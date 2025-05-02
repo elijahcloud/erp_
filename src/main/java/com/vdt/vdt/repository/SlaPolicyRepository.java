@@ -19,14 +19,14 @@ public interface SlaPolicyRepository extends JpaRepository<SlaPolicy, Long> {
 
     @Query("SELECT p FROM SlaPolicy p WHERE p.ticketType = :ticketType " +
             "AND p.priority = :priority " +
-            "AND p.customerGroup = :customerGroup " )
+            "AND p.customerAccountType = :customerAccountType " )
     Optional<SlaPolicy> findMatchingPolicy(
             @Param("ticketType") TicketType ticketType,
             @Param("priority") TicketPriority priority,
-            @Param("customerGroup") CustomerAccountType customerGroup
+            @Param("customerAccountType") CustomerAccountType customerAccountType
     );
 
-    SlaPolicy findByCustomerGroupAndTicketType(CustomerAccountType accountType, TicketType type);
+    SlaPolicy findByCustomerAccountTypeAndTicketType(CustomerAccountType accountType, TicketType type);
 
     Page<SlaPolicy> findAllByDeletedFalse(Pageable pageable);
 

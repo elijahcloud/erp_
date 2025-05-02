@@ -74,10 +74,10 @@ public class SlaPolicyService {
                 .map(TicketPriority::valueOf)
                 .ifPresent(slaPolicy::setPriority);
 
-        Optional.ofNullable(request.getCustomerGroup())
+        Optional.ofNullable(request.getCustomerAccountType())
                 .map(String::toUpperCase)
                 .map(CustomerAccountType::valueOf)
-                .ifPresent(slaPolicy::setCustomerGroup);
+                .ifPresent(slaPolicy::setCustomerAccountType);
         if (request.getResponseTimeTargetInMinutes() > 0) {
             slaPolicy.setResponseTimeTargetInMinutes(request.getResponseTimeTargetInMinutes());
         }
@@ -105,7 +105,7 @@ public class SlaPolicyService {
     public SlaPolicy getSlaPolicyForTicket(long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket with id " + ticketId + " not found"));
-        return slaPolicyRepository.findByCustomerGroupAndTicketType(ticket.getCustomer().getAccountType(), ticket.getTicketType());
+        return slaPolicyRepository.findByCustomerAccountTypeAndTicketType(ticket.getCustomer().getAccountType(), ticket.getTicketType());
     }
 
     public SlaPolicyResponse getPolicyById(Long id) {
@@ -120,7 +120,7 @@ public class SlaPolicyService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket with id " + ticketId + " not found"));
 
-        SlaPolicy slaPolicy = slaPolicyRepository.findByCustomerGroupAndTicketType(
+        SlaPolicy slaPolicy = slaPolicyRepository.findByCustomerAccountTypeAndTicketType(
                 ticket.getCustomer().getAccountType(),
                 ticket.getTicketType()
         );

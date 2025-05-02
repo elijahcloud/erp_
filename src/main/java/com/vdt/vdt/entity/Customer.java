@@ -32,7 +32,7 @@ public class Customer {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "customer_account_type", nullable = false)
-    private AccountType accountType;
+    private CustomerAccountType accountType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "customer_tier", nullable = false)

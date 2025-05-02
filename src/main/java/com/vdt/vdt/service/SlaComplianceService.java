@@ -94,7 +94,7 @@ public class SlaComplianceService {
 
 
 //    public SlaPolicy getSlaForCustomerGroupAndTicketType(CustomerAccountType group, TicketType type) {
-//        return slaPolicyRepository.findByCustomerGroupAndTicketType(group, type)
+//        return slaPolicyRepository.findByCustomerAccountTypeAndTicketType(group, type)
 //                .orElseThrow(() -> new IllegalArgumentException("SLA configuration not found for the given group and ticket type"));
 //    }
 //
