@@ -33,6 +33,6 @@ spring:
     default-encoding: UTF-8
     from: ${EMAIL_USERNAME}
 
-logging:
-  level:
-    org.springframework.security: TRACE
+#logging:
+#  level:
+#    org.springframework.security: TRACE
