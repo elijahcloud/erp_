@@ -16,7 +16,7 @@ public class SwaggerConfig {
         final String securitySchemeName = "bearerAuth";
         
         return new OpenAPI()
-                .info(new Info().title("User Management API").version("1.0"))
+                .info(new Info().title("VDT ERP API").version("1.0"))
                 .addSecurityItem(new SecurityRequirement().addList(securitySchemeName))
                 .components(new Components()
                         .addSecuritySchemes(securitySchemeName,
