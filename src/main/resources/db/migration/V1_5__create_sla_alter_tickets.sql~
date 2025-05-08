@@ -21,7 +21,7 @@ CREATE INDEX idx_sla_customer_group ON sla_policies(customer_group);
 
 
 ALTER TABLE tickets
-ADD COLUMN sla_status ENUM('ON_TRACK','AT_RISK' 'BREACHED'),
+ADD COLUMN sla_status ENUM('ON_TRACK', 'BREACHED') DEFAULT 'ON_TRACK',
 ADD COLUMN last_action_at DATETIME DEFAULT NULL,
 ADD COLUMN first_response_at DATETIME DEFAULT NULL,
 ADD COLUMN resolved_at DATETIME DEFAULT NULL,

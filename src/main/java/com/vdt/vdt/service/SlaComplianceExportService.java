@@ -12,10 +12,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 
 @Service
@@ -28,11 +25,13 @@ public class SlaComplianceExportService {
         this.ticketRepository = ticketRepository;
     }
 
-    public void exportSlaComplianceToCsv(String fileName) throws IOException {
-        List<Object[]> slaComplianceData = ticketRepository.getSlaComplianceData(); // Assume this query fetches SLA data
+    public byte[] exportSlaComplianceToCsv() throws IOException {
+        List<Object[]> slaComplianceData = ticketRepository.getSlaComplianceData();
 
-        try (Writer writer = new FileWriter(fileName);
-             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader("Ticket ID", "Title", "Status", "Priority", "SLA Breach", "Resolved At", "First Response At", "Created At"))) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try (Writer writer = new OutputStreamWriter(out);
+             CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(
+                     "Ticket ID", "Title", "Status", "Priority", "SLA Breach", "Resolved At", "First Response At", "Created At"))) {
 
             for (Object[] record : slaComplianceData) {
                 csvPrinter.printRecord(record);
@@ -40,12 +39,16 @@ public class SlaComplianceExportService {
 
             csvPrinter.flush();
         }
-    }
-    public void exportSlaComplianceToPdf(String fileName) throws DocumentException, IOException {
-        List<Object[]> slaComplianceData = ticketRepository.getSlaComplianceData(); // Assume this query fetches SLA data
 
+        return out.toByteArray();
+    }
+
+    public byte[] exportSlaComplianceToPdf() throws DocumentException {
+        List<Object[]> slaComplianceData = ticketRepository.getSlaComplianceData();
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
         Document document = new Document();
-        PdfWriter.getInstance(document, new FileOutputStream(fileName));
+        PdfWriter.getInstance(document, out);
         document.open();
 
         Table table = new Table(7);
@@ -58,17 +61,21 @@ public class SlaComplianceExportService {
         table.addCell("Created At");
 
         for (Object[] record : slaComplianceData) {
-            table.addCell((String) record[0]);
-            table.addCell((String) record[1]);
-            table.addCell((String) record[2]);
-            table.addCell((String) record[3]);
-            table.addCell((String) record[4]);
-            table.addCell((String) record[5]);
-            table.addCell((String) record[6]);
+            table.addCell(record[0] != null ? record[0].toString() : "");
+            table.addCell(record[1] != null ? record[1].toString() : "");
+            table.addCell(record[2] != null ? record[2].toString() : "");
+            table.addCell(record[3] != null ? record[3].toString() : "");
+            table.addCell(record[4] != null ? record[4].toString() : "");
+            table.addCell(record[5] != null ? record[5].toString() : "");
+            table.addCell(record[6] != null ? record[6].toString() : "");
         }
 
         document.add(table);
         document.close();
+
+        return out.toByteArray();
     }
+
+
 }
 

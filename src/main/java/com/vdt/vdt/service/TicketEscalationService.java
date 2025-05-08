@@ -6,52 +6,114 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 public class TicketEscalationService {
 
     private final TicketRepository ticketRepository;
     private final TicketSlaEvaluator slaEvaluator;
+    private final ExecutorService executorService;
     private static final int PAGE_SIZE = 100;
+    private static final Logger log = LoggerFactory.getLogger(TicketEscalationService.class);
 
-    public TicketEscalationService(TicketRepository ticketRepository, TicketSlaEvaluator slaEvaluator) {
+    public TicketEscalationService(TicketRepository ticketRepository, TicketSlaEvaluator slaEvaluator, ExecutorService executorService) {
         this.ticketRepository = ticketRepository;
         this.slaEvaluator = slaEvaluator;
 
+        this.executorService = executorService;
     }
-    @Scheduled(fixedRate = 30 * 60 * 1000)
+
+    @Async
+    @Scheduled(fixedDelay = 30 * 60 * 1000)
     public void checkTicketsForEscalation() {
+        long start = System.currentTimeMillis();
         int page = 0;
         Page<Ticket> pageTickets;
+        List<Future<?>> futures = new ArrayList<>();
 
-        do {
-            pageTickets = ticketRepository.findOpenTickets(PageRequest.of(page++, PAGE_SIZE));
+        try {
+            do {
+                PageRequest pageRequest = PageRequest.of(page++, PAGE_SIZE);
+                pageTickets = ticketRepository.findOpenTickets(pageRequest);
+                List<Ticket> tickets = pageTickets.getContent();
 
-            for (Ticket ticket : pageTickets.getContent()) {
-                boolean changed = slaEvaluator.evaluate(ticket);
-                if (changed) ticketRepository.save(ticket);
+
+                futures.add(executorService.submit(() -> {
+                    List<Ticket> changedTickets = new ArrayList<>();
+
+                    for (Ticket ticket : tickets) {
+                        boolean changed = slaEvaluator.evaluate(ticket);
+                        if (changed) {
+                            changedTickets.add(ticket);
+                        }
+                    }
+
+                    if (!changedTickets.isEmpty()) {
+                        ticketRepository.saveAll(changedTickets); // batch save
+                    }
+                }));
+            } while (pageTickets.hasNext());
+
+
+            for (Future<?> future : futures) {
+                try {
+                    future.get();
+                } catch (Exception e) {
+                    log.error("Error during ticket processing task", e);
+                }
             }
-
-        } while (pageTickets.hasNext());
+        } finally {
+            long duration = System.currentTimeMillis() - start;
+            log.info("checkTicketsForEscalation completed in {} ms", duration);
+        }
     }
 
 
-    @Scheduled(fixedRate = 5 * 60 * 1000)
+    @Scheduled(fixedDelay = 5 * 60 * 1000)
     public void checkTicketsNearSla() {
+        long start = System.currentTimeMillis();
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime nearWindow = now.plusMinutes(60);
 
-        List<Ticket> nearSlaTickets = ticketRepository.findTicketsNearSlaBreach(now, nearWindow);
+        try {
+            List<Ticket> nearSlaTickets = ticketRepository.findTicketsNearSlaBreach(now, nearWindow);
 
-        for (Ticket ticket : nearSlaTickets) {
-            boolean changed = slaEvaluator.evaluate(ticket);
-            if (changed) ticketRepository.save(ticket);
+            if (!nearSlaTickets.isEmpty()) {
+                int chunkSize = 100;
+
+                IntStream.iterate(0, startIndex -> startIndex < nearSlaTickets.size(), startIndex -> startIndex + chunkSize)
+                        .mapToObj(startIndex -> nearSlaTickets.subList(startIndex, Math.min(startIndex + chunkSize, nearSlaTickets.size())))
+                        .forEach(chunk -> executorService.execute(() -> {
+                            try {
+                                List<Ticket> changedTickets = chunk.stream()
+                                        .filter(slaEvaluator::evaluate)
+                                        .collect(Collectors.toList());
+
+                                if (!changedTickets.isEmpty()) {
+                                    ticketRepository.saveAll(changedTickets);
+                                }
+                            } catch (Exception e) {
+                                log.error("Error in async ticket processing", e);
+                            }
+                        }));
+            }
+        } finally {
+            long duration = System.currentTimeMillis() - start;
+            log.info("checkTicketsNearSla completed in {} ms", duration);
         }
     }
+
+
 }
 

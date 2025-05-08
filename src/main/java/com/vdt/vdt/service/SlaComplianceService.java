@@ -1,24 +1,28 @@
 package com.vdt.vdt.service;
 
-import com.vdt.vdt.entity.CustomerAccountType;
-import com.vdt.vdt.entity.SlaPolicy;
+import com.vdt.vdt.dto.AgentSlaBreachDTO;
+import com.vdt.vdt.dto.DepartmentSlaBreachDTO;
+import com.vdt.vdt.dto.TicketTypeSlaPerformanceDTO;
+import com.vdt.vdt.dto.TopSlaViolatorDTO;
 import com.vdt.vdt.entity.Ticket;
 import com.vdt.vdt.entity.TicketType;
 import com.vdt.vdt.repository.TicketRepository;
-import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 
 public class SlaComplianceService {
 
     private final TicketRepository ticketRepository;
+    private static final Logger log = LoggerFactory.getLogger(SlaComplianceService.class);
 
     public SlaComplianceService (TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
@@ -27,6 +31,7 @@ public class SlaComplianceService {
     public double getResolvedWithinSlaPercentage() {
         long totalTickets = ticketRepository.countTotalTickets();
         long resolvedWithinSla = ticketRepository.countResolvedWithinSla();
+
         return totalTickets == 0 ? 0 : (double) resolvedWithinSla / totalTickets * 100;
     }
     public double getAverageResponseTime() {
@@ -50,55 +55,54 @@ public class SlaComplianceService {
     }
 
 
-    public Map<String, Long> getSlaBreachesPerAgent() {
+    public List<AgentSlaBreachDTO> getSlaBreachesPerAgent() {
         List<Object[]> result = ticketRepository.countSlaBreachesPerAgent();
-        Map<String, Long> breachesPerAgent = new HashMap<>();
+        List<AgentSlaBreachDTO> breaches = new ArrayList<>();
         for (Object[] row : result) {
-            breachesPerAgent.put((String) row[0], (Long) row[1]);
+            String agent = String.valueOf(row[0]);
+            Long count = (Long) row[1];
+            breaches.add(new AgentSlaBreachDTO(agent, count));
         }
-        return breachesPerAgent;
+        return breaches;
     }
 
-    public Map<String, Long> getSlaBreachesPerDepartment() {
+
+    public List<DepartmentSlaBreachDTO> getSlaBreachesPerDepartment() {
         List<Ticket[]> result = ticketRepository.countSlaBreachesPerDepartment();
-        Map<String, Long> breachesPerDepartment = new HashMap<>();
+        List<DepartmentSlaBreachDTO> breaches = new ArrayList<>();
         for (Object[] row : result) {
-            String departmentName = (String) row[0];
+            String departmentName = String.valueOf(row[0]);
             Long breachCount = (Long) row[1];
-            breachesPerDepartment.put(departmentName, breachCount);
+            breaches.add(new DepartmentSlaBreachDTO(departmentName, breachCount));
         }
-        return breachesPerDepartment;
+        return breaches;
     }
 
 
-    public Map<String, Double> getSlaPerformanceByTicketType() {
+
+    public List<TicketTypeSlaPerformanceDTO> getSlaPerformanceByTicketType() {
         List<Object[]> result = ticketRepository.countSlaComplianceByTicketType();
-        Map<String, Double> slaPerformance = new HashMap<>();
+        List<TicketTypeSlaPerformanceDTO> performanceList = new ArrayList<>();
+
         for (Object[] row : result) {
-            String ticketType = (String) row[0];
+            TicketType ticketType = (TicketType) row[0];
             long totalTickets = (long) row[1];
             long compliantTickets = (long) row[2];
-            slaPerformance.put(ticketType, (double) compliantTickets / totalTickets * 100);
+            double percentage = totalTickets == 0 ? 0.0 : ((double) compliantTickets / totalTickets) * 100;
+
+            performanceList.add(new TicketTypeSlaPerformanceDTO(ticketType.name(), percentage));
         }
-        return slaPerformance;
+
+        return performanceList;
     }
 
-    public List<String> getTopSlaViolators() {
-        List<Object[]> result = ticketRepository.findTopSlaViolators();
-        List<String> topViolators = new ArrayList<>();
-        for (Object[] row : result) {
-            topViolators.add((String) row[0]);
-        }
-        return topViolators;
+    public Page<TopSlaViolatorDTO> getTopSlaViolators(Pageable pageable) {
+        Page<Object[]> result = ticketRepository.findTopSlaViolators(pageable);
+        return result.map(row -> new TopSlaViolatorDTO(
+                (String) row[0],
+                ((Number) row[1]).longValue()
+        ));
     }
 
 
-//    public SlaPolicy getSlaForCustomerGroupAndTicketType(CustomerAccountType group, TicketType type) {
-//        return slaPolicyRepository.findByCustomerAccountTypeAndTicketType(group, type)
-//                .orElseThrow(() -> new IllegalArgumentException("SLA configuration not found for the given group and ticket type"));
-//    }
-//
-//    public SlaConfiguration createOrUpdateSlaConfiguration(SlaConfiguration slaConfiguration) {
-//        return slaConfigurationRepository.save(slaConfiguration);
-//    }
 }

@@ -35,13 +35,13 @@ public class AsyncNotificationService {
                     .orElseThrow(() -> new EntityNotFoundException("Ticket not found with ID: " + ticketId));
 
 
-            User manager = userService.getManagerOfUserAssignedToATicket(assignedAgent.getId());  // Using assignedAgent ID here
+            User manager = userService.getManagerOfUserAssignedToATicket(assignedAgent.getId());
 
             if (manager != null) {
                 notificationService.sendNotification(
                         manager.getEmail(),
                         "SLA Breach Alert",
-                        "Ticket ID " + ticket.getId() + " has breached SLA and needs your attention."
+                        "Ticket ID " + ticket.getId() + " has breached SLA and needs your attention, please reassign the ticket."
                 );
                 log.info("Successfully notified Manager [{}] for ticket [{}] SLA breach.", manager.getEmail(), ticketId);
             } else {
@@ -52,15 +52,6 @@ public class AsyncNotificationService {
         }
     }
 
-
-    @Async
-    public void notifyUser(String email, String message, long ticketId) {
-        notificationService.sendNotification(
-                email,
-                "new ticket assigned "+ticketId,
-                message
-        );
-    }
 
     @Async
     public void notifyAgent(User assignedAgent, Long ticketId) {
@@ -76,13 +67,17 @@ public class AsyncNotificationService {
                         "Critical Ticket SLA Breach",
                         "Critical Ticket ID " + ticket.getId() + " has breached SLA. Immediate action required."
                 );
-                log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", agent.get().getEmail(), ticketId);
+                getInfo(ticketId, agent);
             } else {
-                log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
+                getWarn(ticketId);
             }
         } catch (Exception ex) {
             log.error("Error while alerting CRM Supervisor for critical ticket [{}]: {}", ticketId, ex.getMessage(), ex);
         }
+    }
+
+    private static void getInfo(Long ticketId, Optional<User> agent) {
+        log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", agent.get().getEmail(), ticketId);
     }
 
     public void notifyCrmSupervisor(Long ticketId) {
@@ -98,13 +93,17 @@ public class AsyncNotificationService {
                         "Critical Ticket SLA Breach",
                         "Critical Ticket ID " + ticket.getId() + " has breached SLA. Immediate action required."
                 );
-                log.info("Successfully alerted CRM Supervisor [{}] for critical ticket [{}].", crmSupervisor.getEmail(), ticketId);
+                getInfo(ticketId, Optional.of(crmSupervisor));
             } else {
-                log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
+                getWarn(ticketId);
             }
         } catch (Exception ex) {
             log.error("Error while alerting CRM Supervisor for critical ticket [{}]: {}", ticketId, ex.getMessage(), ex);
         }
+    }
+
+    private static void getWarn(Long ticketId) {
+        log.warn("No CRM Supervisor found to alert for critical ticket [{}]", ticketId);
     }
 }
 

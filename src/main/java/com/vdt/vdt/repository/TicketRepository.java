@@ -1,7 +1,6 @@
 package com.vdt.vdt.repository;
 
 import com.vdt.vdt.entity.Ticket;
-import com.vdt.vdt.entity.TicketPriority;
 import com.vdt.vdt.entity.TicketStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,34 +19,24 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
 
     Page<Ticket> findByCustomerId(Long customerId, Pageable pageable);
     List<Ticket> findByCustomerId(Long customerId);
-    @Query("SELECT t FROM Ticket t WHERE " +
-            "(t.customer.id = :customerId OR :customerId IS NULL) " +
-            "AND (t.id = :ticketId OR :ticketId IS NULL) " +
-            "AND (t.status = :status OR :status IS NULL) " +
-            "AND (t.priority = :priority OR :priority IS NULL)")
-    Page<Ticket> searchTickets(Long customerId, Long ticketId, TicketStatus status, TicketPriority priority, Pageable pageable);
 
     long countByStatus(TicketStatus ticketStatus);
-
-    List<Ticket> findByStatus(TicketStatus ticketStatus);
 
     @Query("SELECT t.id as id, t.createdAt as createdAt, t.slaResponseDueAt as slaResponseDueAt, t.slaResolutionDueAt as slaResolutionDueAt, t.priority as priority, t.firstResponseAt as firstResponseAt, t.assignedAgent as assignedAgent FROM Ticket t WHERE t.status <> 'CLOSED' AND t.status <> 'RESOLVED'")
     Page<Ticket> findOpenTickets(Pageable pageable);
 
 
-    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.resolutionSlaBreached = false AND t.resolvedAt IS NOT NULL")
+    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.resolutionSlaBreached = false AND t.status ='CLOSED'")
     long countResolvedWithinSla();
 
 
     @Query("SELECT COUNT(t) FROM Ticket t")
     long countTotalTickets();
 
-
     @Query("SELECT t FROM Ticket t WHERE t.firstResponseAt IS NOT NULL")
     List<Ticket> findTicketsWithResponseTime();
 
-
-    @Query("SELECT t.assignedAgent.id, COUNT(t) FROM Ticket t WHERE t.responseSlaBreached = true OR t.resolutionSlaBreached = true GROUP BY t.assignedAgent.id")
+    @Query("SELECT u.email, COUNT(t) FROM Ticket t JOIN User u ON t.assignedAgent.id = u.id WHERE t.responseSlaBreached = true OR t.resolutionSlaBreached = true GROUP BY u.email")
     List<Object[]> countSlaBreachesPerAgent();
 
 
@@ -55,8 +44,17 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
     List<Object[]> countSlaComplianceByTicketType();
 
 
-    @Query("SELECT t.assignedAgent.id, COUNT(t) FROM Ticket t WHERE t.resolutionSlaBreached = true GROUP BY t.assignedAgent.id ORDER BY COUNT(t) DESC")
-    List<Object[]> findTopSlaViolators();
+    @Query(value = "SELECT u.user_email, COUNT(t.ticket_id) " +
+            "FROM tickets t " +
+            "JOIN users u ON t.ticket_assigned_agent = u.user_id " +
+            "WHERE t.is_resolution_sla_breached = true " +
+            "GROUP BY u.user_email " +
+            "ORDER BY COUNT(t.ticket_id) DESC",
+            countQuery = "SELECT COUNT(DISTINCT t.ticket_assigned_agent) FROM tickets t WHERE t.is_resolution_sla_breached = true",
+            nativeQuery = true)
+    Page<Object[]> findTopSlaViolators(Pageable pageable);
+
+
 
     @Query("""
     SELECT 

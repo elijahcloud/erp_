@@ -346,39 +346,5 @@ public class TicketService {
     }
 
 
-//    public void reassignTicket(Long ticketId, String previousAgentEmail) {
-//        Ticket ticket = ticketRepository.findById(ticketId)
-//                .orElseThrow(() -> new EntityNotFoundException("Ticket not found with ID: " + ticketId));
-//
-//        User currentAgent = previousAgentEmail != null
-//                ? userService.findByEmail(previousAgentEmail)
-//                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + previousAgentEmail))
-//                : null;
-//
-//
-//        Optional<User> newAgentOpt = userService.findFirstByIsActiveTrueAndEmailNot(previousAgentEmail);
-//
-//        if (newAgentOpt.isEmpty()) {
-//            log.warn("No available agent to reassign ticket [{}].", ticketId);
-//            throw new IllegalStateException("No available agent to reassign the ticket.");
-//        }
-//
-//        User newAgent = newAgentOpt.get();
-//
-//        ticket.setAssignedAgent(newAgent);
-//        ticket.setSlaTimerPaused(false);
-//        ticket.setUpdatedAt(LocalDateTime.now());
-//        ticket.setUpdatedBy(newAgent.getId());
-//
-//        ticketRepository.save(ticket);
-//
-//        asyncNotificationService.notifyUser(
-//                newAgent.getEmail(),
-//                "Ticket ID " + ticketId + " has been reassigned to you.",
-//                ticketId
-//        );
-//
-//        log.info("Ticket [{}] reassigned to agent [{}].", ticketId, newAgent.getId());
-//    }
 
 }

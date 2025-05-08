@@ -29,36 +29,23 @@ public class SlaComplianceReportController {
 
     @GetMapping("/download/csv")
     public ResponseEntity<byte[]> downloadCsvReport() throws IOException {
-        String fileName = "SLA_Compliance_Report.csv";
-        exportService.exportSlaComplianceToCsv(fileName);
-
-        File file = new File(fileName);
-        InputStream inputStream = new FileInputStream(file);
-
-        byte[] data = inputStream.readAllBytes();
-        inputStream.close();
+        byte[] data = exportService.exportSlaComplianceToCsv();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=SLA_Compliance_Report.csv")
                 .header(HttpHeaders.CONTENT_TYPE, "application/csv")
                 .body(data);
     }
 
     @GetMapping("/download/pdf")
     public ResponseEntity<byte[]> downloadPdfReport() throws IOException, DocumentException {
-        String fileName = "SLA_Compliance_Report.pdf";
-        exportService.exportSlaComplianceToPdf(fileName);
-
-        File file = new File(fileName);
-        InputStream inputStream = new FileInputStream(file);
-
-        byte[] data = inputStream.readAllBytes();
-        inputStream.close();
+        byte[] data = exportService.exportSlaComplianceToPdf();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName)
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=SLA_Compliance_Report.pdf")
                 .header(HttpHeaders.CONTENT_TYPE, "application/pdf")
                 .body(data);
     }
+
 }
 
