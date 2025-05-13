@@ -5,6 +5,7 @@ import com.vdt.vdt.dto.CreateTicketResponse;
 import com.vdt.vdt.dto.SlaBreachStatusDTO;
 import com.vdt.vdt.dto.TicketDetailDto;
 import com.vdt.vdt.entity.*;
+import com.vdt.vdt.repository.CaseRepository;
 import com.vdt.vdt.repository.SlaPolicyRepository;
 import com.vdt.vdt.repository.TicketCommentRepository;
 import com.vdt.vdt.repository.TicketRepository;
@@ -23,7 +24,6 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -49,13 +49,16 @@ public class TicketService {
     @Autowired
     private AsyncNotificationService asyncNotificationService;
 
+    @Autowired
+    private CaseRepository caseRepository;
+
 
     public CreateTicketResponse createTicket(CreateTicketRequest request) {
         Customer customer = customerService.findById(request.getCustomerId());
 
         Ticket ticket = ticketMapper.map(request, Ticket.class);
         ticket.setCustomer(customer);
-
+        ticket.setCreatedBy(customer.getId());
         ticket.setCreatedAt(LocalDateTime.now());
         if(request.getAgentEmail() != null) {
             Optional<User> agent = userService.findByEmail(request.getAgentEmail());
@@ -78,9 +81,21 @@ public class TicketService {
         ticket.setSlaResolutionDueAt(
                 ticket.getCreatedAt().plus(Duration.ofMinutes(slaPolicy.getResolutionTimeTargetInMinutes()))
         );
+
+        if (request.getCaseId() != null) {
+            Case parentCase = caseRepository.findById(request.getCaseId())
+                    .orElseThrow(() -> new IllegalArgumentException("Case not found"));
+            ticket.setTicketCase(parentCase);
+        }
         ticket.setStatus(TicketStatus.OPEN);
         ticket.setUpdatedAt(LocalDateTime.now());
         Ticket savedTicket = ticketRepository.save(ticket);
+
+
+        handleHighPriorityTicket(savedTicket);
+
+        groupTicketIntoExistingCase(savedTicket);
+
         CreateTicketResponse response = ticketMapper.map(savedTicket, CreateTicketResponse.class);
         response.setCustomerEmail(customer.getEmail());
         response.setCustomerName(customer.getName());
@@ -343,6 +358,39 @@ public class TicketService {
         long hours = duration.toHours();
         long minutes = duration.toMinutes() % 60;
         return String.format("%d hours %d minutes", hours, minutes);
+    }
+
+    private void handleHighPriorityTicket(Ticket ticket) {
+        if (ticket.getPriority() == TicketPriority.HIGH) {
+            Optional<Case> existing = caseRepository.findOpenCaseByIssueType(ticket.getIssueType());
+
+            Case targetCase = existing.orElseGet(() -> {
+                Case newCase = new Case();
+                newCase.setCaseTitle("Auto-case for: " + ticket.getIssueType());
+                newCase.setCaseStatus(TicketStatus.OPEN);
+                newCase.setCaseType(CaseType.SLA_WATCH);
+                return caseRepository.save(newCase);
+            });
+
+            ticket.setTicketCase(targetCase);
+            ticketRepository.save(ticket);
+        }
+    }
+    private void groupTicketIntoExistingCase(Ticket ticket) {
+        IssueType issueType = ticket.getIssueType();
+        Optional<Case> openCase = caseRepository.findOpenCaseByIssueType(issueType);
+
+        Case parentCase = openCase.orElseGet(() -> {
+            Case newCase = new Case();
+            newCase.setCaseTitle(issueType.name().replace("_", " ") + " Case");
+            newCase.setIssueType(issueType);
+            newCase.setCaseStatus(TicketStatus.OPEN);
+            newCase.setCreatedAt(LocalDateTime.now());
+            return caseRepository.save(newCase);
+        });
+
+        ticket.setTicketCase(parentCase);
+        ticketRepository.save(ticket);
     }
 
 

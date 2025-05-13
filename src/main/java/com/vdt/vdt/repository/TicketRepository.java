@@ -1,5 +1,6 @@
 package com.vdt.vdt.repository;
 
+import com.vdt.vdt.entity.Case;
 import com.vdt.vdt.entity.Ticket;
 import com.vdt.vdt.entity.TicketStatus;
 import org.springframework.data.domain.Page;
@@ -81,4 +82,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
 
     @Query("SELECT t.assignedDepartment.name, COUNT(t) FROM Ticket t WHERE t.ticketSlaStatus = 'BREACHED' GROUP BY t.assignedDepartment.name")
     List<Ticket[]> countSlaBreachesPerDepartment();
+
+    List<Ticket> findByTicketCase(Case ticketCase);
+
+
+    List<Ticket> findByTicketCaseAndStatus(Case foundCase, TicketStatus ticketStatus);
 }

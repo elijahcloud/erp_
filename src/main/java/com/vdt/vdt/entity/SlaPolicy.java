@@ -38,6 +38,12 @@ public class SlaPolicy {
     @Column(nullable = false)
     private boolean deleted = false;
 
+    @Enumerated(EnumType.STRING)
+    private CaseType caseType;
+
+    @Enumerated(EnumType.STRING)
+    private CustomerTier customerTier;
+
     public boolean isDeleted() {
         return deleted;
     }
@@ -116,6 +122,22 @@ public class SlaPolicy {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public CaseType getCaseType() {
+        return caseType;
+    }
+
+    public void setCaseType(CaseType caseType) {
+        this.caseType = caseType;
+    }
+
+    public CustomerTier getCustomerTier() {
+        return customerTier;
+    }
+
+    public void setCustomerTier(CustomerTier customerTier) {
+        this.customerTier = customerTier;
     }
 }
 

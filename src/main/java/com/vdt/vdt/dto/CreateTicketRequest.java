@@ -12,7 +12,7 @@ public class CreateTicketRequest {
     private String priority;
     private Long customerId;
     private String agentEmail;
-
+    private Long caseId;
     public String getAgentEmail() {
         return agentEmail;
     }
@@ -61,4 +61,11 @@ public class CreateTicketRequest {
         this.customerId = customerId;
     }
 
+    public Long getCaseId() {
+        return caseId;
+    }
+
+    public void setCaseId(Long caseId) {
+        this.caseId = caseId;
+    }
 }

@@ -211,6 +211,12 @@ public class SlaPolicyService {
         return !ticket.getResolvedAt().isAfter(ticket.getSlaResolutionDueAt());
     }
 
+    public SlaPolicy getPolicyForCaseTypeAndCustomerTier(CaseType caseType, CustomerTier customerTier) {
+        return slaPolicyRepository.findByCaseTypeAndCustomerTier(caseType, customerTier)
+                .orElseThrow(() -> new IllegalStateException("No SLA policy found for caseType=" + caseType + " and tier=" + customerTier));
+    }
+
+
     private TicketSlaDashboardDTO convertToTicketSlaDashboardDTO(Ticket ticket) {
         TicketSlaDashboardDTO dto = slaPolicyMapper.map(ticket, TicketSlaDashboardDTO.class);
         String resolutionTime;
@@ -239,7 +245,5 @@ public class SlaPolicyService {
             case RESOLVED, CLOSED -> "100%";
         };
     }
-
-
 
 }
