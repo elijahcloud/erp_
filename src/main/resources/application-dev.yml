@@ -1,11 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://root:mrPBxHeOLLVOCxACUzldvNtkDaGZXFnb@nozomi.proxy.rlwy.net:19185/railway
+#    url: jdbc:mysql://root:mrPBxHeOLLVOCxACUzldvNtkDaGZXFnb@nozomi.proxy.rlwy.net:19185/railway
     #url: jdbc:mariadb://localhost:3306/vdt_db
-
+    url: jdbc:mariadb://localhost:3307/vdt_db
     username: root
-    password: "mrPBxHeOLLVOCxACUzldvNtkDaGZXFnb"
-    #password: "elijah"
+    password: root
+#    username: root
+#    password: "mrPBxHeOLLVOCxACUzldvNtkDaGZXFnb"
+#    password: "elijah"
 
   jpa:
     hibernate:
@@ -18,21 +20,22 @@ spring:
 
 
   mail:
-    host: ${EMAIL_HOST:mail.designxcel.com} # Environment variable for email host, default to mail.designxcel.com
-    port: 465 # Changed to 587 for TLS (or use 465 for SSL)
-    username: ${EMAIL_USERNAME} # Environment variable for email username
-    password: ${EMAIL_PASSWORD} # Environment variable for email password
+    host: ${EMAIL_HOST:smtp.mailtrap.io} # Environment variable for email host, default to mail.designxcel.com
+    port: 2525 # Changed to 587 for TLS (or use 465 for SSL)
+    username: ${EMAIL_USERNAME:094c8f37e74ad1} # Environment variable for email username
+    password: ${EMAIL_PASSWORD:72fff4c84bd7ca} # Environment variable for email password
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: false # Ensure this is true for TLS
+            enable: true # Ensure this is true for TLS
           ssl:
-            enable: true # Set to true if using SSL (port 465)
+            enable: false # Set to true if using SSL (port 465)
     default-encoding: UTF-8
-    from: ${EMAIL_USERNAME}
 
-logging:
-  level:
-    org.springframework.security: TRACE
+#    from: ${EMAIL_USERNAME}
+
+#logging:
+#  level:
+#    org.springframework.security: TRACE

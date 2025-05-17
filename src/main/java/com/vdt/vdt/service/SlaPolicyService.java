@@ -42,13 +42,24 @@ public class SlaPolicyService {
 
 
     public SlaPolicyResponse createPolicy(SlaPolicyRequest request) {
+        request.setPriority(toUpper(request.getPriority()));
+        request.setCustomerTier(toUpper(request.getCustomerTier()));
+        request.setCaseType(toUpper(request.getCaseType()));
+        request.setTicketType(toUpper(request.getTicketType()));
+        request.setCustomerAccountType(toUpper(request.getCustomerAccountType()));
+
+
         SlaPolicy slaPolicy = slaPolicyMapper.map(request,SlaPolicy.class);
-        slaPolicy.setTicketType(TicketType.valueOf(request.getTicketType()));
         slaPolicy.setCreatedAt(LocalDateTime.now());
         slaPolicy.setUpdatedAt(LocalDateTime.now());
         SlaPolicy saved = slaPolicyRepository.save(slaPolicy);
         return slaPolicyMapper.map(saved,SlaPolicyResponse.class);
     }
+
+    private String toUpper(String value) {
+        return value != null ? value.toUpperCase() : null;
+    }
+
 
     public SlaPolicyResponse updatePolicy(Long id, SlaPolicyRequest request) {
         SlaPolicy slaPolicy = slaPolicyRepository.findById(id)
@@ -78,6 +89,18 @@ public class SlaPolicyService {
                 .map(String::toUpperCase)
                 .map(CustomerAccountType::valueOf)
                 .ifPresent(slaPolicy::setCustomerAccountType);
+
+        Optional.ofNullable(request.getCustomerTier())
+                .map(String::toUpperCase)
+                .map(CustomerTier::valueOf)
+                .ifPresent(slaPolicy::setCustomerTier);
+
+        Optional.ofNullable(request.getCaseType())
+                .map(String::toUpperCase)
+                .map(CaseType::valueOf)
+                .ifPresent(slaPolicy::setCaseType);
+
+
         if (request.getResponseTimeTargetInMinutes() > 0) {
             slaPolicy.setResponseTimeTargetInMinutes(request.getResponseTimeTargetInMinutes());
         }
@@ -211,6 +234,12 @@ public class SlaPolicyService {
         return !ticket.getResolvedAt().isAfter(ticket.getSlaResolutionDueAt());
     }
 
+    public SlaPolicy getPolicyForCaseTypeAndCustomerTier(CaseType caseType, CustomerTier customerTier) {
+        return slaPolicyRepository.findByCaseTypeAndCustomerTier(caseType, customerTier)
+                .orElseThrow(() -> new IllegalStateException("No SLA policy found for caseType=" + caseType + " and tier=" + customerTier));
+    }
+
+
     private TicketSlaDashboardDTO convertToTicketSlaDashboardDTO(Ticket ticket) {
         TicketSlaDashboardDTO dto = slaPolicyMapper.map(ticket, TicketSlaDashboardDTO.class);
         String resolutionTime;
@@ -239,7 +268,5 @@ public class SlaPolicyService {
             case RESOLVED, CLOSED -> "100%";
         };
     }
-
-
 
 }

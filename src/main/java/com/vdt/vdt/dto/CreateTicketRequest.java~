@@ -7,7 +7,7 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class CreateTicketRequest {
     private String ticketTitle;
-    private String ticketType;
+    private String type;
     private String description;
     private String priority;
     private Long customerId;
@@ -29,12 +29,12 @@ public class CreateTicketRequest {
         this.ticketTitle = ticketTitle;
     }
 
-    public String getTicketType() {
-        return ticketType;
+    public String getType() {
+        return type;
     }
 
-    public void setTicketType(String ticketType) {
-        this.ticketType = ticketType;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getDescription() {

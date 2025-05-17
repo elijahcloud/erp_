@@ -12,6 +12,18 @@ public class SlaPolicyRequest {
     private long responseTimeTargetInMinutes;
     private long resolutionTimeTargetInMinutes;
     private Integer reassignThresholdHours;
+    private String customerTier;
+    private String caseType;
+
+
+
+    public String getCustomerTier() {
+        return customerTier;
+    }
+
+    public void setCustomerTier(String customerTier) {
+        this.customerTier = customerTier;
+    }
 
     public Integer getReassignThresholdHours() {
         return reassignThresholdHours;

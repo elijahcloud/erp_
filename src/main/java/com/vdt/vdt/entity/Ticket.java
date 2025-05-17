@@ -113,14 +113,25 @@ public class Ticket {
     private boolean resolutionSlaBreached = false;
 
     private boolean slaTimerPaused = false;
+
     private String pauseReason;
+
     private LocalDateTime slaPausedAt;
 
     private long responseTimeMinutes;
+
     private long resolutionTimeMinutes;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "ticket_sla_status")
     private TicketSlaStatus ticketSlaStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_case_id")
+    private Case ticketCase;
+
+    @Enumerated(EnumType.STRING)
+    private IssueType issueType;
 
     public TicketSlaStatus getTicketSlaStatus() {
         return ticketSlaStatus;
@@ -352,6 +363,22 @@ public class Ticket {
 
     public void setSlaPausedAt(LocalDateTime slaPausedAt) {
         this.slaPausedAt = slaPausedAt;
+    }
+
+    public Case getTicketCase() {
+        return ticketCase;
+    }
+
+    public void setTicketCase(Case ticketCase) {
+        this.ticketCase = ticketCase;
+    }
+
+    public IssueType getIssueType() {
+        return issueType;
+    }
+
+    public void setIssueType(IssueType issueType) {
+        this.issueType = issueType;
     }
 }
 

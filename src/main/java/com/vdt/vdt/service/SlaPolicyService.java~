@@ -42,13 +42,18 @@ public class SlaPolicyService {
 
 
     public SlaPolicyResponse createPolicy(SlaPolicyRequest request) {
+
         SlaPolicy slaPolicy = slaPolicyMapper.map(request,SlaPolicy.class);
-        slaPolicy.setTicketType(TicketType.valueOf(request.getTicketType()));
         slaPolicy.setCreatedAt(LocalDateTime.now());
         slaPolicy.setUpdatedAt(LocalDateTime.now());
         SlaPolicy saved = slaPolicyRepository.save(slaPolicy);
         return slaPolicyMapper.map(saved,SlaPolicyResponse.class);
     }
+
+    private String toUpper(String value) {
+        return value != null ? value.toUpperCase() : null;
+    }
+
 
     public SlaPolicyResponse updatePolicy(Long id, SlaPolicyRequest request) {
         SlaPolicy slaPolicy = slaPolicyRepository.findById(id)
@@ -74,10 +79,12 @@ public class SlaPolicyService {
                 .map(TicketPriority::valueOf)
                 .ifPresent(slaPolicy::setPriority);
 
-        Optional.ofNullable(request.getCustomerGroup())
+        Optional.ofNullable(request.getCustomerAccountType())
                 .map(String::toUpperCase)
                 .map(CustomerAccountType::valueOf)
-                .ifPresent(slaPolicy::setCustomerGroup);
+                .ifPresent(slaPolicy::setCustomerAccountType);
+
+
         if (request.getResponseTimeTargetInMinutes() > 0) {
             slaPolicy.setResponseTimeTargetInMinutes(request.getResponseTimeTargetInMinutes());
         }
@@ -105,7 +112,7 @@ public class SlaPolicyService {
     public SlaPolicy getSlaPolicyForTicket(long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket with id " + ticketId + " not found"));
-        return slaPolicyRepository.findByCustomerGroupAndTicketType(ticket.getCustomer().getAccountType(), ticket.getTicketType());
+        return slaPolicyRepository.findByCustomerAccountTypeAndTicketType(ticket.getCustomer().getAccountType(), ticket.getTicketType());
     }
 
     public SlaPolicyResponse getPolicyById(Long id) {
@@ -120,7 +127,7 @@ public class SlaPolicyService {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket with id " + ticketId + " not found"));
 
-        SlaPolicy slaPolicy = slaPolicyRepository.findByCustomerGroupAndTicketType(
+        SlaPolicy slaPolicy = slaPolicyRepository.findByCustomerAccountTypeAndTicketType(
                 ticket.getCustomer().getAccountType(),
                 ticket.getTicketType()
         );
@@ -207,9 +214,15 @@ public class SlaPolicyService {
         if (ticket.getCreatedAt() == null || ticket.getResolvedAt() == null || ticket.getSlaResolutionDueAt() == null) {
             return false;
         }
-        
+
         return !ticket.getResolvedAt().isAfter(ticket.getSlaResolutionDueAt());
     }
+
+    public SlaPolicy getPolicyForCaseTypeAndCustomerTier(CaseType caseType, CustomerTier customerTier) {
+        return slaPolicyRepository.findByCaseTypeAndCustomerTier(caseType, customerTier)
+                .orElseThrow(() -> new IllegalStateException("No SLA policy found for caseType=" + caseType + " and tier=" + customerTier));
+    }
+
 
     private TicketSlaDashboardDTO convertToTicketSlaDashboardDTO(Ticket ticket) {
         TicketSlaDashboardDTO dto = slaPolicyMapper.map(ticket, TicketSlaDashboardDTO.class);
@@ -239,7 +252,5 @@ public class SlaPolicyService {
             case RESOLVED, CLOSED -> "100%";
         };
     }
-
-
 
 }

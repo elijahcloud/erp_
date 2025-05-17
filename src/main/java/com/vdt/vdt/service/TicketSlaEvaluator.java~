@@ -28,15 +28,15 @@ public class TicketSlaEvaluator {
         boolean changed = false;
         LocalDateTime now = LocalDateTime.now();
 
-        changed |= checkResponseSla(ticket,  now);
+        changed |= checkResponseSla(ticket, now);
         changed |= checkResolutionAtRisk(ticket, now);
         changed |= checkResolutionBreached(ticket, now);
-        notifyCrmForCriticalTicketBreachAndAtRiskTicket(ticket, now);
+        notifyCrmIfTicketIsAtRisk(ticket, now);
 
         return changed;
     }
 
-    private boolean checkResponseSla(Ticket ticket,  LocalDateTime now) {
+    private boolean checkResponseSla(Ticket ticket, LocalDateTime now) {
         if (ticket.getFirstResponseAt() != null || ticket.getAssignedAgent() == null) return false;
 
         if (ticket.getSlaResponseDueAt() != null && now.isAfter(ticket.getSlaResponseDueAt())) {
@@ -77,7 +77,7 @@ public class TicketSlaEvaluator {
         return true;
     }
 
-    private void notifyCrmForCriticalTicketBreachAndAtRiskTicket(Ticket ticket, LocalDateTime now) {
+    private void notifyCrmIfTicketIsAtRisk(Ticket ticket, LocalDateTime now) {
         if (ticket.getPriority() != TicketPriority.CRITICAL || ticket.getTicketSlaStatus() != TicketSlaStatus.AT_RISK) {
             return;
         }

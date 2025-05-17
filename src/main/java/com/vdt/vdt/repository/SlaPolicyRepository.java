@@ -1,9 +1,6 @@
 package com.vdt.vdt.repository;
 
-import com.vdt.vdt.entity.CustomerAccountType;
-import com.vdt.vdt.entity.SlaPolicy;
-import com.vdt.vdt.entity.TicketPriority;
-import com.vdt.vdt.entity.TicketType;
+import com.vdt.vdt.entity.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +27,9 @@ public interface SlaPolicyRepository extends JpaRepository<SlaPolicy, Long> {
 
     Page<SlaPolicy> findAllByDeletedFalse(Pageable pageable);
 
+    SlaPolicy findByCaseTypeAndCustomerAccountType(CaseType caseType, CustomerAccountType accountType);
+
+    Optional<SlaPolicy> findByCaseTypeAndCustomerTier(CaseType caseType, CustomerTier customerTier);
 }
 
 
