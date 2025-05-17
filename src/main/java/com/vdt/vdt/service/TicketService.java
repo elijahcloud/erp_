@@ -55,13 +55,15 @@ public class TicketService {
 
     public CreateTicketResponse createTicket(CreateTicketRequest request) {
         Customer customer = customerService.findById(request.getCustomerId());
-
+        request.setPriority(request.getPriority().toUpperCase());
+        request.setTicketType(request.getTicketType().toUpperCase());
         Ticket ticket = ticketMapper.map(request, Ticket.class);
         ticket.setCustomer(customer);
         ticket.setCreatedBy(customer.getId());
         ticket.setCreatedAt(LocalDateTime.now());
+        Optional<User> agent = Optional.empty();
         if(request.getAgentEmail() != null) {
-            Optional<User> agent = userService.findByEmail(request.getAgentEmail());
+            agent = userService.findByEmail(request.getAgentEmail());
             if(agent.isEmpty()) {
                 throw new IllegalArgumentException("Agent not found");
             }
@@ -69,7 +71,7 @@ public class TicketService {
             ticket.setAssignedDepartment(agent.get().getDepartment());
         }
         SlaPolicy slaPolicy = slaPolicyRepository.findMatchingPolicy(
-                TicketType.valueOf(request.getType()),
+                TicketType.valueOf(request.getTicketType()),
                 TicketPriority.valueOf(request.getPriority()),
                 customer.getAccountType()
         ).orElseThrow(() -> new IllegalArgumentException("No SLA Policy found"));
@@ -92,13 +94,17 @@ public class TicketService {
         Ticket savedTicket = ticketRepository.save(ticket);
 
 
-        handleHighPriorityTicket(savedTicket);
+//        handleHighPriorityTicket(savedTicket);
+//
+//        groupTicketIntoExistingCase(savedTicket);
 
-        groupTicketIntoExistingCase(savedTicket);
+        asyncNotificationService.notifyCustomer(ticket.getCustomer(), savedTicket.getId());
+        agent.ifPresent(user -> asyncNotificationService.notifyAssignedAgent(user, savedTicket.getId()));
 
         CreateTicketResponse response = ticketMapper.map(savedTicket, CreateTicketResponse.class);
         response.setCustomerEmail(customer.getEmail());
         response.setCustomerName(customer.getName());
+        response.setType(savedTicket.getTicketType().name());
         return response;
     }
 
@@ -154,9 +160,9 @@ public class TicketService {
         if (ticket.getStatus() != TicketStatus.OPEN) {
             throw new IllegalArgumentException("Ticket must be open to be assigned");
         }
-        if (ticket.getAssignedAgent() != null) {
-            throw new IllegalArgumentException("Ticket already assigned");
-        }
+//        if (ticket.getAssignedAgent() != null) {
+//            throw new IllegalArgumentException("Ticket already assigned");
+//        }
         ticket.setAssignedAgent(assignedAgent.get());
         ticket.setStatus(TicketStatus.ASSIGNED);
         ticket.setLastActionAt(LocalDateTime.now());
@@ -167,10 +173,12 @@ public class TicketService {
         ticket.setUpdatedAt(LocalDateTime.now());
         ticket.setAssignedDepartment(assignedAgent.get().getDepartment());
         Ticket savedTicket = ticketRepository.save(ticket);
-        asyncNotificationService.notifyAgent(ticket.getAssignedAgent(), savedTicket.getId());
+        asyncNotificationService.notifyAssignedAgent(ticket.getAssignedAgent(), savedTicket.getId());
         return "ticket has been assigned to " + savedTicket.getAssignedAgent().getEmail();
 
     }
+
+
     public String checkTicketStatus(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));

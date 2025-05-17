@@ -23,7 +23,7 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> , JpaSpeci
 
     long countByStatus(TicketStatus ticketStatus);
 
-    @Query("SELECT t FROM Ticket t WHERE t.status <> 'CLOSED' AND t.status <> 'RESOLVED'")
+    @Query("SELECT t.id as id, t.createdAt as createdAt, t.slaResponseDueAt as slaResponseDueAt, t.slaResolutionDueAt as slaResolutionDueAt, t.priority as priority, t.firstResponseAt as firstResponseAt, t.assignedAgent as assignedAgent FROM Ticket t WHERE t.status <> 'CLOSED' AND t.status <> 'RESOLVED'")
     Page<Ticket> findOpenTickets(Pageable pageable);
 
 

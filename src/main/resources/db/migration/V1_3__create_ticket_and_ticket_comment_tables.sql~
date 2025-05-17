@@ -3,7 +3,6 @@
 -- Database Schema Initialization
 -- ============================
 
-
 -- Tickets Table
 
 CREATE TABLE tickets
@@ -17,7 +16,7 @@ CREATE TABLE tickets
     ticket_status                ENUM('OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED', 'RESOLVED', 'CLOSED') NULL,
     ticket_source                 VARCHAR(255)          NULL,
     ticket_assigned_department_id BIGINT                NULL,
-    ticket_assigned_agent         VARCHAR(255)          NULL,
+    ticket_assigned_agent         bigint          NULL,
     ticket_created_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
     ticket_created_by             BIGINT                NULL,
     ticket_updated_at             TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL,
@@ -37,7 +36,7 @@ CREATE TABLE tickets
     sla_paused_at                 DATETIME DEFAULT NULL,
     response_time_minutes         BIGINT                NOT NULL,
     resolution_time_minutes       BIGINT                NOT NULL,
-    ticket_sla_status             ENUM('ON_TRACK','AT_RISK' 'BREACHED'),
+    ticket_sla_status             ENUM('ON_TRACK','AT_RISK', 'BREACHED'),
     ticket_case_id                BIGINT                NULL,
     issue_type                    ENUM('SIM_FAILURE', 'BULK_SIM_MIGRATION', 'NETWORK_OUTAGE', 'DEVICE_PROVISIONING', 'ACCOUNT_MIGRATION') NULL,
     CONSTRAINT pk_tickets PRIMARY KEY (ticket_id)
@@ -67,18 +66,17 @@ ALTER TABLE ticket_comments
 
 -- Add Foreign Keys for tickets
 ALTER TABLE tickets
-ADD CONSTRAINT fk_tickets_customer
-FOREIGN KEY (ticket_customer_id) REFERENCES customers(customer_id) ON DELETE CASCADE ON UPDATE CASCADE,
-ADD CONSTRAINT fk_tickets_assigned_department
-FOREIGN KEY (ticket_assigned_department_id) REFERENCES departments(department_id) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT fk_tickets_created_by
-FOREIGN KEY (ticket_created_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT fk_tickets_updated_by
-FOREIGN KEY (ticket_updated_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE,
-ADD CONSTRAINT fk_tickets_deleted_by
-FOREIGN KEY (ticket_deleted_by) REFERENCES users(user_id) ON DELETE SET NULL ON UPDATE CASCADE;
+    ADD CONSTRAINT uc_tickets_ticket_assigned_agent UNIQUE (ticket_assigned_agent);
+
+ALTER TABLE tickets
+    ADD CONSTRAINT FK_TICKETS_ON_TICKET_ASSIGNED_AGENT FOREIGN KEY (ticket_assigned_agent) REFERENCES users (user_id);
+
+ALTER TABLE tickets
+    ADD CONSTRAINT FK_TICKETS_ON_TICKET_ASSIGNED_DEPARTMENT FOREIGN KEY (ticket_assigned_department_id) REFERENCES departments (department_id);
+
 ALTER TABLE tickets
     ADD CONSTRAINT FK_TICKETS_ON_TICKET_CASE FOREIGN KEY (ticket_case_id) REFERENCES cases (case_id);
 
-
+ALTER TABLE tickets
+    ADD CONSTRAINT FK_TICKETS_ON_TICKET_CUSTOMER FOREIGN KEY (ticket_customer_id) REFERENCES customers (customer_id);
 

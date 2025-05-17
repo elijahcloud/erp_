@@ -3,6 +3,7 @@ package com.vdt.vdt.service;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class NotificationService {
 
-    private final JavaMailSender mailSender;
+
+    private  final JavaMailSender mailSender;
 
     public NotificationService(JavaMailSender mailSender) {
             this.mailSender = mailSender;
@@ -20,7 +22,7 @@ public class NotificationService {
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
-
+            helper.setFrom("noreply@test.com");
             helper.setTo(toEmail);
             helper.setSubject(subject);
             helper.setText(body, true);

@@ -48,7 +48,6 @@ public class TicketEscalationService {
                 pageTickets = ticketRepository.findOpenTickets(pageRequest);
                 List<Ticket> tickets = pageTickets.getContent();
 
-
                 futures.add(executorService.submit(() -> {
                     List<Ticket> changedTickets = new ArrayList<>();
 
@@ -60,7 +59,7 @@ public class TicketEscalationService {
                     }
 
                     if (!changedTickets.isEmpty()) {
-                        ticketRepository.saveAll(changedTickets); // batch save
+                        ticketRepository.saveAll(changedTickets);
                     }
                 }));
             } while (pageTickets.hasNext());
